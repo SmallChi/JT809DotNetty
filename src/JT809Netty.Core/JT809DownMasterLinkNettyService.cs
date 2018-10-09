@@ -42,34 +42,26 @@ namespace JT809Netty.Core
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            nettyOptions.OnChange(options =>
+            Task.Run(async () => 
             {
                 try
                 {
-                    bootstrap.ConnectAsync(options.Host, options.Port);
+                    workerGroup = new MultithreadEventLoopGroup();
+                    bootstrap = new Bootstrap();
+                    bootstrap.Group(workerGroup)
+                             .Channel<TcpSocketChannel>()
+                             .Handler(new ActionChannelInitializer<IChannel>(channel =>
+                             {
+                                 InitChannel(channel);
+                             }))
+                           .Option(ChannelOption.SoBacklog, 1048576);
+                    IChannel clientChannel = await bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(nettyOptions.CurrentValue.Host), nettyOptions.CurrentValue.Port));
                 }
                 catch (Exception ex)
                 {
 
                 }
             });
-            try
-            {
-                workerGroup = new MultithreadEventLoopGroup();
-                bootstrap = new Bootstrap();
-                bootstrap.Group(workerGroup)
-                         .Channel<TcpServerChannel>()
-                         .Handler(new ActionChannelInitializer<IChannel>(channel =>
-                           {
-                               InitChannel(channel);
-                         }))
-                       .Option(ChannelOption.SoBacklog, 1048576);
-                bootstrap.ConnectAsync(nettyOptions.CurrentValue.Host, nettyOptions.CurrentValue.Port);
-            }
-            catch (Exception ex)
-            {
-
-            }
             return Task.CompletedTask;
         }
 
@@ -89,13 +81,19 @@ namespace JT809Netty.Core
         private void InitChannel(IChannel channel)
         {
             var scope = serviceProvider.CreateScope();
-            //下级平台应每 1min 发送一个主链路保持清求数据包到上级平台以保持链路连接
-            channel.Pipeline.AddLast("systemIdleState", new WriteTimeoutHandler(60));
-            channel.Pipeline.AddLast("jt809DownMasterLinkConnection", scope.ServiceProvider.GetRequiredService<JT809DownMasterLinkConnectionHandler>()); 
-            channel.Pipeline.AddLast("jt809Buffer", new DelimiterBasedFrameDecoder(int.MaxValue, Unpooled.CopiedBuffer(new byte[] { JT809.Protocol.JT809Package.BEGINFLAG }), Unpooled.CopiedBuffer(new byte[] { JT809.Protocol.JT809Package.ENDFLAG })));
-            channel.Pipeline.AddLast("jt809Decode", scope.ServiceProvider.GetRequiredService<JT809DecodeHandler>());
-            //channel.Pipeline.AddLast("jt809Service", scope.ServiceProvider.GetRequiredService<JT808ServiceHandler>());
-            scope.Dispose();
+            try
+            {
+                //下级平台应每 1min 发送一个主链路保持清求数据包到上级平台以保持链路连接
+                channel.Pipeline.AddLast("systemIdleState", new WriteTimeoutHandler(60));
+                channel.Pipeline.AddLast("jt809DownMasterLinkConnection", scope.ServiceProvider.GetRequiredService<JT809DownMasterLinkConnectionHandler>());
+                channel.Pipeline.AddLast("jt809Buffer", new DelimiterBasedFrameDecoder(int.MaxValue, Unpooled.CopiedBuffer(new byte[] { JT809.Protocol.JT809Package.BEGINFLAG }), Unpooled.CopiedBuffer(new byte[] { JT809.Protocol.JT809Package.ENDFLAG })));
+                channel.Pipeline.AddLast("jt809Decode", scope.ServiceProvider.GetRequiredService<JT809DecodeHandler>());
+                channel.Pipeline.AddLast("jT809DownMasterLinkServiceHandler", scope.ServiceProvider.GetRequiredService<JT809DownMasterLinkServiceHandler>());
+            }
+            finally
+            {
+                scope.Dispose();
+            }
         }
     }
 }

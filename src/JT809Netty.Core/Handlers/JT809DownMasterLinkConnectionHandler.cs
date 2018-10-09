@@ -1,9 +1,15 @@
 ﻿using DotNetty.Handlers.Timeout;
 using DotNetty.Transport.Channels;
 using JT809Netty.Core.Configs;
+using JT809.Protocol.JT809Extensions;
+using JT809.Protocol.JT809Enums;
+using JT809.Protocol.JT809MessageBody;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
+using JT809.Protocol;
+using DotNetty.Buffers;
+using JT809Netty.Core.ServiceHandlers;
 
 namespace JT809Netty.Core.Handlers
 {
@@ -14,13 +20,16 @@ namespace JT809Netty.Core.Handlers
     {
         private readonly ILogger<JT809DownMasterLinkConnectionHandler> logger;
 
-        private IOptionsMonitor<JT809NettyOptions> optionsMonitor;
+        private readonly IOptionsMonitor<JT809NettyOptions> optionsMonitor;
+
+        private readonly JT809BusinessTypeHandler jT809BusinessTypeHandler;
 
         public JT809DownMasterLinkConnectionHandler(
+            JT809BusinessTypeHandler jT809BusinessTypeHandler,
             IOptionsMonitor<JT809NettyOptions> optionsMonitor,
-            SessionManager sessionManager,
             ILoggerFactory loggerFactory)
         {
+            this.jT809BusinessTypeHandler = jT809BusinessTypeHandler;
             this.optionsMonitor = optionsMonitor;
             logger = loggerFactory.CreateLogger<JT809DownMasterLinkConnectionHandler>();
         }
@@ -56,7 +65,7 @@ namespace JT809Netty.Core.Handlers
         /// <summary>
         /// 主链路超时策略
         /// 下级平台登录成功后，在与上级平台之间如果有应用业务数据包往来的情况下，不需要发送主链路保持数据包; 
-        ///  否则，下级平台应每 1min 发送一个主链路保持清求数据包到上级平台以保持链路连接
+        /// 否则，下级平台应每 1min 发送一个主链路保持清求数据包到上级平台以保持链路连接
         /// </summary>
         /// <param name="context"></param>
         /// <param name="evt"></param>
@@ -69,17 +78,9 @@ namespace JT809Netty.Core.Handlers
                 logger.LogInformation($"{idleStateEvent.State.ToString()}>>>{channelId}");
                 switch (idleStateEvent.State)
                 {
-                    //case IdleState.ReaderIdle:
-
-                    //    break;
                     case IdleState.WriterIdle:
-#warning 发送心跳保持
-                        break;
-                    //case IdleState.AllIdle:
-
-                    //    break;
-                    default:
-
+                        //发送心跳保持
+                        jT809BusinessTypeHandler.Msg0x1005(context);
                         break;
                 }
             }
