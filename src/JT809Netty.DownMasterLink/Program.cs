@@ -16,6 +16,14 @@ namespace JT809Netty.DownMasterLink
     {
         static async Task Main(string[] args)
         {
+            JT809.Protocol.JT809GlobalConfig.Instance
+                .SetHeaderOptions(new JT809.Protocol.JT809Configs.JT809HeaderOptions
+                {
+                     MsgGNSSCENTERID= 20141013,
+                     Version=new JT809.Protocol.JT809Header_Version (2,0,0),
+                     EncryptKey=9595
+                });
+                
             var serverHostBuilder = new HostBuilder()
                     .UseEnvironment(args[0].Split('=')[1])
                     .ConfigureAppConfiguration((hostingContext, config) =>
@@ -36,7 +44,7 @@ namespace JT809Netty.DownMasterLink
                         services.AddSingleton<ILoggerFactory, LoggerFactory>();
                         services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
                         services.Configure<JT809NettyOptions>(hostContext.Configuration.GetSection("JT809NettyOptions"));
-                        services.AddSingleton<JT809BusinessTypeHandler, JT809BusinessTypeHandler>();
+                        services.AddSingleton<JT809DownMasterLinkBusinessTypeHandler, JT809DownMasterLinkBusinessTypeHandler>();
                         services.AddScoped<JT809DownMasterLinkConnectionHandler, JT809DownMasterLinkConnectionHandler>();
                         services.AddScoped<JT809DownMasterLinkServiceHandler, JT809DownMasterLinkServiceHandler>();
                         services.AddScoped<JT809DecodeHandler, JT809DecodeHandler>();

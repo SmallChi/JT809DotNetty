@@ -7,8 +7,10 @@ using DotNetty.Transport.Channels.Sockets;
 using DotNetty.Transport.Libuv;
 using JT809Netty.Core.Configs;
 using JT809Netty.Core.Handlers;
+using JT809Netty.Core.ServiceHandlers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -32,10 +34,20 @@ namespace JT809Netty.Core
 
         readonly IOptionsMonitor<JT809NettyOptions> nettyOptions;
 
+        IChannel ClientChannel;
+
+        private readonly JT809DownMasterLinkBusinessTypeHandler jT809DownMasterLinkBusinessTypeHandler;
+
+        private readonly ILogger<JT809DownMasterLinkNettyService> logger;
+
         public JT809DownMasterLinkNettyService(
+            ILoggerFactory loggerFactory,
+            JT809DownMasterLinkBusinessTypeHandler jT809DownMasterLinkBusinessTypeHandler,
             IOptionsMonitor<JT809NettyOptions> nettyOptionsAccessor,
             IServiceProvider serviceProvider)
         {
+            logger = loggerFactory.CreateLogger<JT809DownMasterLinkNettyService>();
+            this.jT809DownMasterLinkBusinessTypeHandler = jT809DownMasterLinkBusinessTypeHandler;
             nettyOptions = nettyOptionsAccessor;
             this.serviceProvider = serviceProvider;
         }
@@ -54,8 +66,10 @@ namespace JT809Netty.Core
                              {
                                  InitChannel(channel);
                              }))
-                           .Option(ChannelOption.SoBacklog, 1048576);
-                    IChannel clientChannel = await bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(nettyOptions.CurrentValue.Host), nettyOptions.CurrentValue.Port));
+                             .Option(ChannelOption.SoBacklog, 1048576);
+                    ClientChannel = await bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(nettyOptions.CurrentValue.Host), nettyOptions.CurrentValue.Port));
+
+                    jT809DownMasterLinkBusinessTypeHandler.Msg0x1001(ClientChannel);
                 }
                 catch (Exception ex)
                 {
@@ -69,11 +83,19 @@ namespace JT809Netty.Core
         {
             try
             {
-                Task.WhenAll(workerGroup.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1)));
+                jT809DownMasterLinkBusinessTypeHandler.Msg0x1003(ClientChannel);
+                // 已发送注销请求,等待30s,待服务器响应
+                int sleepTime = 50000;
+                logger.LogInformation($">>>The logout request has been sent, waiting for {sleepTime/1000}s for the server to respond...");
+                Thread.Sleep(sleepTime);
+                logger.LogInformation($"Check Status:<<<{jT809DownMasterLinkBusinessTypeHandler.Status.ToString()}");
+                ClientChannel.CloseAsync().ContinueWith((state) => {
+                    Task.WhenAll(workerGroup.ShutdownGracefullyAsync(TimeSpan.FromMilliseconds(100), TimeSpan.FromSeconds(1)));
+                });
             }
             catch (Exception ex)
             {
-
+                logger.LogError(ex,"");
             }
             return Task.CompletedTask;
         }
@@ -84,7 +106,7 @@ namespace JT809Netty.Core
             try
             {
                 //下级平台应每 1min 发送一个主链路保持清求数据包到上级平台以保持链路连接
-                channel.Pipeline.AddLast("systemIdleState", new WriteTimeoutHandler(60));
+                channel.Pipeline.AddLast("systemIdleState", new IdleStateHandler(0, 60, 0));
                 channel.Pipeline.AddLast("jt809DownMasterLinkConnection", scope.ServiceProvider.GetRequiredService<JT809DownMasterLinkConnectionHandler>());
                 channel.Pipeline.AddLast("jt809Buffer", new DelimiterBasedFrameDecoder(int.MaxValue, Unpooled.CopiedBuffer(new byte[] { JT809.Protocol.JT809Package.BEGINFLAG }), Unpooled.CopiedBuffer(new byte[] { JT809.Protocol.JT809Package.ENDFLAG })));
                 channel.Pipeline.AddLast("jt809Decode", scope.ServiceProvider.GetRequiredService<JT809DecodeHandler>());

@@ -42,6 +42,7 @@ namespace JT809Netty.Core.Handlers
                 if (logger.IsEnabled(LogLevel.Debug))
                 {
                     msg = ByteBufferUtil.HexDump(buffer);
+                    logger.LogDebug("accept package <<<" + msg);
                     logger.LogDebug("accept package success count<<<" + MsgSuccessCounter.Count.ToString());
                 }
             }

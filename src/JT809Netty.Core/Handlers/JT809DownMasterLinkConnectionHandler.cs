@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using JT809.Protocol;
 using DotNetty.Buffers;
 using JT809Netty.Core.ServiceHandlers;
+using System.Threading;
+using System;
 
 namespace JT809Netty.Core.Handlers
 {
@@ -22,20 +24,22 @@ namespace JT809Netty.Core.Handlers
 
         private readonly IOptionsMonitor<JT809NettyOptions> optionsMonitor;
 
-        private readonly JT809BusinessTypeHandler jT809BusinessTypeHandler;
+        private readonly JT809DownMasterLinkBusinessTypeHandler jT809DownMasterLinkBusinessTypeHandler;
 
         public JT809DownMasterLinkConnectionHandler(
-            JT809BusinessTypeHandler jT809BusinessTypeHandler,
+            JT809DownMasterLinkBusinessTypeHandler jT809DownMasterLinkBusinessTypeHandler,
             IOptionsMonitor<JT809NettyOptions> optionsMonitor,
             ILoggerFactory loggerFactory)
         {
-            this.jT809BusinessTypeHandler = jT809BusinessTypeHandler;
+            this.jT809DownMasterLinkBusinessTypeHandler = jT809DownMasterLinkBusinessTypeHandler;
             this.optionsMonitor = optionsMonitor;
             logger = loggerFactory.CreateLogger<JT809DownMasterLinkConnectionHandler>();
         }
 
         public override void ChannelActive(IChannelHandlerContext context)
         {
+            if (logger.IsEnabled(LogLevel.Debug))
+                logger.LogDebug(">>>Activate the channel.");
             base.ChannelActive(context);
         }
 
@@ -75,12 +79,12 @@ namespace JT809Netty.Core.Handlers
             if (idleStateEvent != null)
             {
                 string channelId = context.Channel.Id.AsShortText();
-                logger.LogInformation($"{idleStateEvent.State.ToString()}>>>{channelId}");
                 switch (idleStateEvent.State)
                 {
                     case IdleState.WriterIdle:
                         //发送心跳保持
-                        jT809BusinessTypeHandler.Msg0x1005(context);
+                        logger.LogInformation($"{idleStateEvent.State.ToString()} heartbeat>>>{channelId}");
+                        jT809DownMasterLinkBusinessTypeHandler.Msg0x1005(context);
                         break;
                 }
             }

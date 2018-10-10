@@ -74,15 +74,6 @@ namespace JT809Netty.Core.Handlers
                         //下级平台连续 3min 未收到上级平台发送的从链路保持应答数据包，则认为上级平台的连接中断，将主动断开数据传输从链路。
                         context.CloseAsync();
                         break;
-                    //case IdleState.WriterIdle:
-
-                    //    break;
-                    //case IdleState.AllIdle:
-
-                    //    break;
-                    default:
-
-                        break;
                 }
             }
             base.UserEventTriggered(context, evt);

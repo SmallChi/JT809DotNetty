@@ -14,17 +14,20 @@ using JT809.Protocol.JT809Exceptions;
 
 namespace JT809Netty.Core.Handlers
 {
+    /// <summary>
+    /// 下级平台主链路
+    /// </summary>
     public class JT809DownMasterLinkServiceHandler : ChannelHandlerAdapter
     {
         private readonly ILogger<JT809DownMasterLinkServiceHandler> logger;
 
-        private readonly JT809BusinessTypeHandler jT809BusinessTypeHandler;
+        private readonly JT809DownMasterLinkBusinessTypeHandler jT809DownMasterLinkBusinessTypeHandler;
 
         public JT809DownMasterLinkServiceHandler(
-                 JT809BusinessTypeHandler jT809BusinessTypeHandler,
+                 JT809DownMasterLinkBusinessTypeHandler jT809DownMasterLinkBusinessTypeHandler,
                  ILoggerFactory loggerFactory)
         {
-            this.jT809BusinessTypeHandler = jT809BusinessTypeHandler;
+            this.jT809DownMasterLinkBusinessTypeHandler = jT809DownMasterLinkBusinessTypeHandler;
             logger = loggerFactory.CreateLogger<JT809DownMasterLinkServiceHandler>();
         }
 
@@ -34,7 +37,12 @@ namespace JT809Netty.Core.Handlers
             string receive = string.Empty;
             try
             {
-                
+                if (logger.IsEnabled(LogLevel.Debug))
+                    logger.LogDebug(JsonConvert.SerializeObject(jT809Package));
+                if (jT809DownMasterLinkBusinessTypeHandler.ResponseHandlerDict.TryGetValue(jT809Package.Header.BusinessType,out var action))
+                {
+                    action(jT809Package, context);
+                }
             }
             catch (JT809Exception ex)
             {

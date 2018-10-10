@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28010.2016
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809Netty.Core", "JT809Netty.Core\JT809Netty.Core.csproj", "{2054D7E6-53B6-412F-BE9D-C6DABD80A111}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JT809Netty.DownMasterLink", "JT809Netty.DownMasterLink\JT809Netty.DownMasterLink.csproj", "{3BF1D40D-A17D-4FBC-B3FF-B6DF8B3F13ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809Netty.DownMasterLink", "JT809Netty.DownMasterLink\JT809Netty.DownMasterLink.csproj", "{3BF1D40D-A17D-4FBC-B3FF-B6DF8B3F13ED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

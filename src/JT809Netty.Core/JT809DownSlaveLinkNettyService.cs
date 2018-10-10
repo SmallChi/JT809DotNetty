@@ -93,7 +93,7 @@ namespace JT809Netty.Core
         {
             var scope = serviceProvider.CreateScope();
             //下级平台连续 3min 未收到上级平台发送的从链路保持应答数据包，则认为上级平台的连接中断，将主动断开数据传输从链路。
-            channel.Pipeline.AddLast("systemIdleState", new ReadTimeoutHandler(180));
+            channel.Pipeline.AddLast("systemIdleState", new IdleStateHandler(180, 0, 0));
             channel.Pipeline.AddLast("jt809DownSlaveLinkConnection", scope.ServiceProvider.GetRequiredService<JT809DownSlaveLinkConnectionHandler>()); 
             channel.Pipeline.AddLast("jt809Buffer", new DelimiterBasedFrameDecoder(int.MaxValue, Unpooled.CopiedBuffer(new byte[] { JT809.Protocol.JT809Package.BEGINFLAG }), Unpooled.CopiedBuffer(new byte[] { JT809.Protocol.JT809Package.ENDFLAG })));
             channel.Pipeline.AddLast("jt809Decode", scope.ServiceProvider.GetRequiredService<JT809DecodeHandler>());
