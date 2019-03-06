@@ -5,17 +5,15 @@ using System;
 using Microsoft.Extensions.Logging;
 using JT809.Protocol.Exceptions;
 using JT809.DotNetty.Core.Services;
-using JT809.DotNetty.Core;
-using JT809.DotNetty.Core.Handlers;
 using JT809.DotNetty.Core.Metadata;
 using JT809.DotNetty.Core.Enums;
 
-namespace JT809.DotNetty.Tcp.Handlers
+namespace JT809.DotNetty.Core.Handlers
 {
     /// <summary>
-    /// JT809服务端处理程序
+    /// JT809主链路服务端处理程序
     /// </summary>
-    internal class JT809TcpServerHandler : SimpleChannelInboundHandler<byte[]>
+    internal class JT809MainServerHandler : SimpleChannelInboundHandler<byte[]>
     {
         private readonly JT809MainMsgIdHandlerBase handler;
         
@@ -23,9 +21,9 @@ namespace JT809.DotNetty.Tcp.Handlers
 
         private readonly JT809AtomicCounterService jT809AtomicCounterService;
 
-        private readonly ILogger<JT809TcpServerHandler> logger;
+        private readonly ILogger<JT809MainServerHandler> logger;
 
-        public JT809TcpServerHandler(
+        public JT809MainServerHandler(
             ILoggerFactory loggerFactory,
             JT809MainMsgIdHandlerBase handler,
             JT809AtomicCounterServiceFactory jT809AtomicCounterServiceFactorty,
@@ -35,7 +33,7 @@ namespace JT809.DotNetty.Tcp.Handlers
             this.handler = handler;
             this.jT809SessionManager = jT809SessionManager;
             this.jT809AtomicCounterService = jT809AtomicCounterServiceFactorty.Create(JT809AtomicCounterType.ServerMain.ToString()); ;
-            logger = loggerFactory.CreateLogger<JT809TcpServerHandler>();
+            logger = loggerFactory.CreateLogger<JT809MainServerHandler>();
         }
 
 

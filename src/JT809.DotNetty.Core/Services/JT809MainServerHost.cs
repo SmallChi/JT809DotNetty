@@ -16,31 +16,33 @@ using System.Threading;
 using System.Threading.Tasks;
 using JT809.Protocol;
 using JT809.DotNetty.Core.Codecs;
-using JT809.DotNetty.Tcp.Handlers;
+using JT809.DotNetty.Core.Handlers;
 
-namespace JT809.DotNetty.Tcp
+namespace JT809.DotNetty.Core.Services
 {
     /// <summary>
     /// JT809 Tcp网关服务
     /// </summary>
-    internal class JT809TcpServerHost : IHostedService
+    internal class JT809MainServerHost : IHostedService
     {
         private readonly IServiceProvider serviceProvider;
         private readonly JT809Configuration configuration;
-        private readonly ILogger<JT809TcpServerHost> logger;
+        private readonly ILogger<JT809MainServerHost> logger;
         private DispatcherEventLoopGroup bossGroup;
         private WorkerEventLoopGroup workerGroup;
         private IChannel bootstrapChannel;
         private IByteBufferAllocator serverBufferAllocator;
+        private ILoggerFactory loggerFactory;
 
-        public JT809TcpServerHost(
+        public JT809MainServerHost(
             IServiceProvider provider,
             ILoggerFactory loggerFactory,
             IOptions<JT809Configuration> jT809ConfigurationAccessor)
         {
             serviceProvider = provider;
             configuration = jT809ConfigurationAccessor.Value;
-            logger=loggerFactory.CreateLogger<JT809TcpServerHost>();
+            logger = loggerFactory.CreateLogger<JT809MainServerHost>();
+            this.loggerFactory = loggerFactory;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -64,18 +66,19 @@ namespace JT809.DotNetty.Tcp
                .ChildHandler(new ActionChannelInitializer<IChannel>(channel =>
                {
                    IChannelPipeline pipeline = channel.Pipeline;
+                   channel.Pipeline.AddLast("jt809MainBuffer", new DelimiterBasedFrameDecoder(int.MaxValue,
+                                  Unpooled.CopiedBuffer(new byte[] { JT809Package.BEGINFLAG }),
+                                  Unpooled.CopiedBuffer(new byte[] { JT809Package.ENDFLAG })));
+                   channel.Pipeline.AddLast("jt809MainSystemIdleState", new IdleStateHandler(
+                                            configuration.ReaderIdleTimeSeconds,
+                                            configuration.WriterIdleTimeSeconds,
+                                            configuration.AllIdleTimeSeconds));
+                   pipeline.AddLast("jt809MainEncode", new JT809Encoder());
+                   pipeline.AddLast("jt809MainDecode", new JT809Decoder());
+                   channel.Pipeline.AddLast("jt809MainConnection", new JT809MainServerConnectionHandler(loggerFactory));
                    using (var scope = serviceProvider.CreateScope())
                    {
-                       channel.Pipeline.AddLast("jt809SystemIdleState", new IdleStateHandler(
-                                                configuration.ReaderIdleTimeSeconds,
-                                                configuration.WriterIdleTimeSeconds,
-                                                configuration.AllIdleTimeSeconds));
-                       channel.Pipeline.AddLast("jt809TcpConnection", scope.ServiceProvider.GetRequiredService<JT809TcpConnectionHandler>());
-                       channel.Pipeline.AddLast("jt809TcpBuffer", new DelimiterBasedFrameDecoder(int.MaxValue,
-                           Unpooled.CopiedBuffer(new byte[] { JT809Package.BEGINFLAG }),
-                           Unpooled.CopiedBuffer(new byte[] { JT809Package.ENDFLAG })));
-                       channel.Pipeline.AddLast("jt809TcpDecode", scope.ServiceProvider.GetRequiredService<JT809Decoder>());
-                       channel.Pipeline.AddLast("jt809TcpService", scope.ServiceProvider.GetRequiredService<JT809TcpServerHandler>());
+                       channel.Pipeline.AddLast("jt809MainService", scope.ServiceProvider.GetRequiredService<JT809MainServerHandler>());
                    }
                }));
             logger.LogInformation($"JT809 TCP Server start at {IPAddress.Any}:{configuration.TcpPort}.");

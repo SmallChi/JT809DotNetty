@@ -1,19 +1,22 @@
-﻿using JT809.DotNetty.Core.Metadata;
+﻿using JT809.DotNetty.Core.Enums;
+using JT809.DotNetty.Core.Internal;
+using JT809.DotNetty.Core.Metadata;
 
 namespace JT809.DotNetty.Core.Services
 {
     /// <summary>
     /// Tcp计数包服务
     /// </summary>
-    public class JT809TcpAtomicCounterService
+    public class JT809AtomicCounterService
     {
-        private readonly JT809AtomicCounter MsgSuccessCounter = new JT809AtomicCounter();
+        private readonly JT809AtomicCounter MsgSuccessCounter;
 
-        private readonly JT809AtomicCounter MsgFailCounter = new JT809AtomicCounter();
+        private readonly JT809AtomicCounter MsgFailCounter;
 
-        public JT809TcpAtomicCounterService()
+        public JT809AtomicCounterService()
         {
-
+            MsgSuccessCounter=new JT809AtomicCounter();
+            MsgFailCounter = new JT809AtomicCounter();
         }
 
         public void Reset()

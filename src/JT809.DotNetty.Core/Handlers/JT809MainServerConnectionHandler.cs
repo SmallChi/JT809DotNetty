@@ -1,27 +1,28 @@
-﻿using DotNetty.Handlers.Timeout;
+﻿using DotNetty.Buffers;
+using DotNetty.Handlers.Timeout;
 using DotNetty.Transport.Channels;
-using JT809.DotNetty.Core;
+using JT809.DotNetty.Core.Metadata;
+using JT809.Protocol;
+using JT809.Protocol.Enums;
+using JT809.Protocol.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
-namespace JT809.DotNetty.Tcp.Handlers
+namespace JT809.DotNetty.Core.Handlers
 {
     /// <summary>
-    /// JT809服务通道处理程序
+    /// JT809主链路服务端连接处理器
     /// </summary>
-    internal class JT809TcpConnectionHandler : ChannelHandlerAdapter
+    public class JT809MainServerConnectionHandler : ChannelHandlerAdapter
     {
-        private readonly ILogger<JT809TcpConnectionHandler> logger;
 
-        private readonly JT809SessionManager jT809SessionManager;
+        private readonly ILogger<JT809MainServerConnectionHandler> logger;
 
-        public JT809TcpConnectionHandler(
-            JT809SessionManager jT809SessionManager,
+        public JT809MainServerConnectionHandler(
             ILoggerFactory loggerFactory)
         {
-            this.jT809SessionManager = jT809SessionManager;
-            logger = loggerFactory.CreateLogger<JT809TcpConnectionHandler>();
+            logger = loggerFactory.CreateLogger<JT809MainServerConnectionHandler>();
         }
 
         /// <summary>
@@ -37,7 +38,7 @@ namespace JT809.DotNetty.Tcp.Handlers
         }
 
         /// <summary>
-        /// 设备主动断开
+        /// 客户端主动断开
         /// </summary>
         /// <param name="context"></param>
         public override void ChannelInactive(IChannelHandlerContext context)
@@ -45,7 +46,6 @@ namespace JT809.DotNetty.Tcp.Handlers
             string channelId = context.Channel.Id.AsShortText();
             if (logger.IsEnabled(LogLevel.Debug))
                 logger.LogDebug($">>>{ channelId } The client disconnects from the server.");
-            jT809SessionManager.RemoveSessionByChannel(context.Channel);
             base.ChannelInactive(context);
         }
 
@@ -59,11 +59,10 @@ namespace JT809.DotNetty.Tcp.Handlers
             string channelId = context.Channel.Id.AsShortText();
             if (logger.IsEnabled(LogLevel.Debug))
                 logger.LogDebug($"<<<{ channelId } The server disconnects from the client.");
-            jT809SessionManager.RemoveSessionByChannel(context.Channel);
             return base.CloseAsync(context);
         }
 
-        public override void ChannelReadComplete(IChannelHandlerContext context)=> context.Flush();
+        public override void ChannelReadComplete(IChannelHandlerContext context) => context.Flush();
 
         /// <summary>
         /// 超时策略
@@ -75,12 +74,14 @@ namespace JT809.DotNetty.Tcp.Handlers
             IdleStateEvent idleStateEvent = evt as IdleStateEvent;
             if (idleStateEvent != null)
             {
-                if(idleStateEvent.State== IdleState.ReaderIdle)
+                if (idleStateEvent.State == IdleState.WriterIdle)
                 {
                     string channelId = context.Channel.Id.AsShortText();
-                    logger.LogInformation($"{idleStateEvent.State.ToString()}>>>{channelId}");
-                    jT809SessionManager.RemoveSessionByChannel(context.Channel);
-                    context.CloseAsync();
+                    logger.LogInformation($"{idleStateEvent.State.ToString()}>>>Heartbeat-{channelId}");
+                    //发送主链路保持请求数据包
+                    var package = JT809BusinessType.主链路连接保持请求消息.Create();
+                    JT809Response jT809Response = new JT809Response(package, 100);
+                    context.WriteAndFlushAsync(jT809Response);
                 }
             }
             base.UserEventTriggered(context, evt);
@@ -89,10 +90,8 @@ namespace JT809.DotNetty.Tcp.Handlers
         public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
         {
             string channelId = context.Channel.Id.AsShortText();
-            logger.LogError(exception,$"{channelId} {exception.Message}" );
-            jT809SessionManager.RemoveSessionByChannel(context.Channel);
+            logger.LogError(exception, $"{channelId} {exception.Message}");
             context.CloseAsync();
         }
     }
 }
-

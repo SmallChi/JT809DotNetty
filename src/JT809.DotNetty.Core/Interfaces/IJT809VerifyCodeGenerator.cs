@@ -7,8 +7,9 @@ namespace JT809.DotNetty.Core.Interfaces
     /// <summary>
     /// 校验码生成器
     /// </summary>
-    public  interface IVerifyCodeGenerator
+    public  interface IJT809VerifyCodeGenerator
     {
         uint Create();
+        uint Get();
     }
 }

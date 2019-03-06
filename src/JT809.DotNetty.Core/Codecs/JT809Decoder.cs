@@ -6,7 +6,10 @@ using JT809.Protocol;
 
 namespace JT809.DotNetty.Core.Codecs
 {
-    public class JT809TcpDecoder : ByteToMessageDecoder
+    /// <summary>
+    /// JT809解码
+    /// </summary>
+    public class JT809Decoder : ByteToMessageDecoder
     {
         protected override void Decode(IChannelHandlerContext context, IByteBuffer input, List<object> output)
         {

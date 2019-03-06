@@ -12,21 +12,21 @@ namespace JT809.DotNetty.Core
     /// <summary>
     /// JT809 Tcp会话管理
     /// </summary>
-    public class JT809TcpSessionManager
+    public class JT809SessionManager
     {
-        private readonly ILogger<JT809TcpSessionManager> logger;
+        private readonly ILogger<JT809SessionManager> logger;
 
         private readonly IJT809SessionPublishing jT809SessionPublishing;
 
-        public JT809TcpSessionManager(
+        public JT809SessionManager(
             IJT809SessionPublishing jT809SessionPublishing,
             ILoggerFactory loggerFactory)
         {
             this.jT809SessionPublishing = jT809SessionPublishing;
-            logger = loggerFactory.CreateLogger<JT809TcpSessionManager>();
+            logger = loggerFactory.CreateLogger<JT809SessionManager>();
         }
 
-        private ConcurrentDictionary<uint, JT809TcpSession> SessionIdDict = new ConcurrentDictionary<uint, JT809TcpSession>();
+        private ConcurrentDictionary<uint, JT809Session> SessionIdDict = new ConcurrentDictionary<uint, JT809Session>();
 
         public int SessionCount
         {
@@ -36,9 +36,9 @@ namespace JT809.DotNetty.Core
             }
         }
 
-        public JT809TcpSession GetSession(uint msgGNSSCENTERID)
+        public JT809Session GetSession(uint msgGNSSCENTERID)
         {
-            if (SessionIdDict.TryGetValue(msgGNSSCENTERID, out JT809TcpSession targetSession))
+            if (SessionIdDict.TryGetValue(msgGNSSCENTERID, out JT809Session targetSession))
             {
                 return targetSession;
             }
@@ -50,29 +50,30 @@ namespace JT809.DotNetty.Core
 
         public void Heartbeat(uint msgGNSSCENTERID)
         {
-            if (SessionIdDict.TryGetValue(msgGNSSCENTERID, out JT809TcpSession oldjT808Session))
+            if (SessionIdDict.TryGetValue(msgGNSSCENTERID, out JT809Session oldjT808Session))
             {
                 oldjT808Session.LastActiveTime = DateTime.Now;
                 SessionIdDict.TryUpdate(msgGNSSCENTERID, oldjT808Session, oldjT808Session);
             }
         }
 
-        public void TryAdd(JT809TcpSession appSession)
+        public void TryAdd(IChannel channel, uint msgGNSSCENTERID)
         {
-            if (SessionIdDict.TryAdd(appSession.MsgGNSSCENTERID, appSession))
+            if (SessionIdDict.ContainsKey(msgGNSSCENTERID)) return;
+            if (SessionIdDict.TryAdd(msgGNSSCENTERID, new JT809Session(channel, msgGNSSCENTERID)))
             {
-                jT809SessionPublishing.PublishAsync(JT809Constants.SessionOnline, appSession.MsgGNSSCENTERID.ToString());
+                jT809SessionPublishing.PublishAsync(JT809Constants.SessionOnline, msgGNSSCENTERID.ToString());
             }
         }
 
-        public JT809TcpSession RemoveSession(uint msgGNSSCENTERID)
+        public JT809Session RemoveSession(uint msgGNSSCENTERID)
         {
             //可以使用任意mq的发布订阅
-            if (!SessionIdDict.TryGetValue(msgGNSSCENTERID, out JT809TcpSession jT808Session))
+            if (!SessionIdDict.TryGetValue(msgGNSSCENTERID, out JT809Session jT808Session))
             {
                 return default;
             }
-            if (SessionIdDict.TryRemove(msgGNSSCENTERID, out JT809TcpSession jT808SessionRemove))
+            if (SessionIdDict.TryRemove(msgGNSSCENTERID, out JT809Session jT808SessionRemove))
             {
                 logger.LogInformation($">>>{msgGNSSCENTERID} Session Remove.");
                 jT809SessionPublishing.PublishAsync(JT809Constants.SessionOffline, msgGNSSCENTERID.ToString());
@@ -91,7 +92,7 @@ namespace JT809.DotNetty.Core
             {
                 foreach (var key in keys)
                 {
-                    SessionIdDict.TryRemove(key, out JT809TcpSession jT808SessionRemove);
+                    SessionIdDict.TryRemove(key, out JT809Session jT808SessionRemove);
                 }
                 string nos = string.Join(",", keys);
                 logger.LogInformation($">>>{nos} Channel Remove.");
@@ -99,7 +100,7 @@ namespace JT809.DotNetty.Core
             }      
         }
 
-        public IEnumerable<JT809TcpSession> GetAll()
+        public IEnumerable<JT809Session> GetAll()
         {
             return SessionIdDict.Select(s => s.Value).ToList();
         }

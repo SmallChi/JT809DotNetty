@@ -13,6 +13,8 @@ namespace JT809.DotNetty.Core.Metadata
         /// </summary>
         public int MinBufferSize { get; set; } 
 
+        public byte[] HexData { get; set; }
+
         public JT809Response()
         {
 
@@ -22,6 +24,11 @@ namespace JT809.DotNetty.Core.Metadata
         {
             Package = package;
             MinBufferSize = minBufferSize;
+        }
+
+        public JT809Response(byte[] hexData)
+        {
+            HexData = hexData;
         }
     }
 }

@@ -1,8 +1,13 @@
 ﻿using JT809.DotNetty.Abstractions;
+using JT809.DotNetty.Core.Codecs;
 using JT809.DotNetty.Core.Configurations;
 using JT809.DotNetty.Core.Converters;
+using JT809.DotNetty.Core.Enums;
+using JT809.DotNetty.Core.Handlers;
 using JT809.DotNetty.Core.Interfaces;
 using JT809.DotNetty.Core.Internal;
+using JT809.DotNetty.Core.Links;
+using JT809.DotNetty.Core.Metadata;
 using JT809.DotNetty.Core.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,9 +55,25 @@ namespace JT809.DotNetty.Core
                 });
             }
             serviceDescriptors.Configure<JT809Configuration>(configuration.GetSection("JT809Configuration"));
-            serviceDescriptors.TryAddSingleton<IVerifyCodeGenerator, VerifyCodeGeneratorDefaultImpl>();
-            serviceDescriptors.TryAddSingleton<IJT809SessionPublishing, JT809SessionPublishingEmptyImpl>();
             serviceDescriptors.TryAddSingleton<JT809SimpleSystemCollectService>();
+            serviceDescriptors.TryAddSingleton<IJT809VerifyCodeGenerator, JT809VerifyCodeGeneratorDefaultImpl>();
+            serviceDescriptors.TryAddSingleton<JT809AtomicCounterServiceFactory>();
+            //JT809编解码器
+            serviceDescriptors.TryAddScoped<JT809Decoder>();
+            serviceDescriptors.TryAddScoped<JT809Encoder>();
+            //主从链路连接处理器
+            serviceDescriptors.TryAddScoped<JT809SubordinateConnectionHandler>();
+            serviceDescriptors.TryAddScoped<JT809MainServerConnectionHandler>();
+            //从链路客户端
+            serviceDescriptors.TryAddSingleton<JT809SubordinateClient>();
+            //主从链路消息默认业务处理器实现
+            serviceDescriptors.TryAddSingleton<JT809MainMsgIdHandlerBase, JT809MainMsgIdDefaultHandler>();
+            serviceDescriptors.TryAddSingleton<JT809SubordinateMsgIdHandlerBase, JT809SubordinateMsgIdDefaultHandler>();
+            //主从链路消息接收处理器
+            serviceDescriptors.TryAddScoped<JT809MainServerHandler>();
+            serviceDescriptors.TryAddScoped<JT809SubordinateServerHandler>();
+            //主链路服务端
+            serviceDescriptors.AddHostedService<JT809MainServerHost>();
             return serviceDescriptors;
         }
     }

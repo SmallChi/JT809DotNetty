@@ -4,9 +4,9 @@ using JT809.Protocol.Enums;
 
 namespace JT809.DotNetty.Core.Metadata
 {
-    public class JT809TcpSession
+    public class JT809Session
     {
-        public JT809TcpSession(IChannel channel, uint msgGNSSCENTERID)
+        public JT809Session(IChannel channel, uint msgGNSSCENTERID)
         {
             MsgGNSSCENTERID = msgGNSSCENTERID;
             Channel = channel;

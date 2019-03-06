@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using JT809.DotNetty.Core.Interfaces;
+using JT809.DotNetty.Core.Links;
 using JT809.DotNetty.Core.Metadata;
 using JT809.Protocol.Enums;
 using JT809.Protocol.Extensions;
@@ -9,26 +10,29 @@ using JT809.Protocol.MessageBody;
 namespace JT809.DotNetty.Core.Handlers
 {
     /// <summary>
-    /// 基于Tcp模式抽象消息处理业务
+    /// 抽象消息处理业务
     /// 自定义消息处理业务
     /// 注意:
     /// 1.ConfigureServices:
     /// services.Replace(new ServiceDescriptor(typeof(JT809MsgIdTcpHandlerBase),typeof(JT809MsgIdCustomTcpHandlerImpl),ServiceLifetime.Singleton));
     /// 2.解析具体的消息体，具体消息调用具体的JT809Serializer.Deserialize<T>
     /// </summary>
-    public abstract class JT809MsgIdTcpHandlerBase
+    public abstract class JT809MainMsgIdHandlerBase
     {
-        protected JT809TcpSessionManager sessionManager { get; }
-        protected IVerifyCodeGenerator verifyCodeGenerator { get; }
+        protected JT809SessionManager sessionManager { get; }
+        protected IJT809VerifyCodeGenerator verifyCodeGenerator { get; }
+        protected JT809SubordinateClient subordinateLinkClient { get; }
         /// <summary>
         /// 初始化消息处理业务
         /// </summary>
-        protected JT809MsgIdTcpHandlerBase(
-            IVerifyCodeGenerator verifyCodeGenerator,
-            JT809TcpSessionManager sessionManager)
+        protected JT809MainMsgIdHandlerBase(
+            IJT809VerifyCodeGenerator verifyCodeGenerator,
+            JT809SubordinateClient subordinateLinkClient,
+            JT809SessionManager sessionManager)
         {
             this.sessionManager = sessionManager;
             this.verifyCodeGenerator = verifyCodeGenerator;
+            this.subordinateLinkClient = subordinateLinkClient;
             HandlerDict = new Dictionary<JT809BusinessType, Func<JT809Request, JT809Response>>
             {
                 {JT809BusinessType.主链路登录请求消息, Msg0x1001},
@@ -42,6 +46,7 @@ namespace JT809.DotNetty.Core.Handlers
             //};
         }
 
+  
         public Dictionary<JT809BusinessType, Func<JT809Request, JT809Response>> HandlerDict { get; protected set; }
 
         //public Dictionary<JT809SubBusinessType, Func<JT809Request, JT809Response>> SubHandlerDict { get; protected set; }
@@ -53,12 +58,14 @@ namespace JT809.DotNetty.Core.Handlers
         /// <returns></returns>
         public virtual JT809Response Msg0x1001(JT809Request request)
         {
+            var verifyCode = verifyCodeGenerator.Create();
             var package= JT809BusinessType.主链路登录应答消息.Create(new JT809_0x1002() 
             {
                  Result= JT809_0x1002_Result.成功,
-                 VerifyCode= verifyCodeGenerator.Create()
+                 VerifyCode= verifyCode
             });
-
+            var jT809_0x1001 = request.Package.Bodies as JT809_0x1001;
+            subordinateLinkClient.ConnectAsync(jT809_0x1001.DownLinkIP, jT809_0x1001.DownLinkPort, verifyCode);
             return new JT809Response(package,100);
         }
 
