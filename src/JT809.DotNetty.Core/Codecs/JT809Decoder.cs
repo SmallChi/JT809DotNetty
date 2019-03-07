@@ -9,7 +9,7 @@ namespace JT809.DotNetty.Core.Codecs
     /// <summary>
     /// JT809解码
     /// </summary>
-    public class JT809Decoder : ByteToMessageDecoder
+    internal class JT809Decoder : ByteToMessageDecoder
     {
         protected override void Decode(IChannelHandlerContext context, IByteBuffer input, List<object> output)
         {

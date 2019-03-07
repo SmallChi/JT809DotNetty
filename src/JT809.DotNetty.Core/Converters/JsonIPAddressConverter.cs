@@ -6,7 +6,7 @@ using System.Text;
 
 namespace JT809.DotNetty.Core.Converters
 {
-    public class JsonIPAddressConverter : JsonConverter
+    internal class JsonIPAddressConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {

@@ -10,7 +10,7 @@ namespace JT809.DotNetty.Core.Codecs
     /// <summary>
     /// JT809编码
     /// </summary>
-    public class JT809Encoder : MessageToByteEncoder<JT809Response>
+    internal class JT809Encoder : MessageToByteEncoder<JT809Response>
     {
         protected override void Encode(IChannelHandlerContext context, JT809Response message, IByteBuffer output)
         {

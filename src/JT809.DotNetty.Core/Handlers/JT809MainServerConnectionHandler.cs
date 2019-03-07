@@ -1,10 +1,5 @@
-﻿using DotNetty.Buffers;
-using DotNetty.Handlers.Timeout;
+﻿using DotNetty.Handlers.Timeout;
 using DotNetty.Transport.Channels;
-using JT809.DotNetty.Core.Metadata;
-using JT809.Protocol;
-using JT809.Protocol.Enums;
-using JT809.Protocol.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
@@ -14,7 +9,7 @@ namespace JT809.DotNetty.Core.Handlers
     /// <summary>
     /// JT809主链路服务端连接处理器
     /// </summary>
-    public class JT809MainServerConnectionHandler : ChannelHandlerAdapter
+    internal class JT809MainServerConnectionHandler : ChannelHandlerAdapter
     {
 
         private readonly ILogger<JT809MainServerConnectionHandler> logger;
@@ -74,14 +69,9 @@ namespace JT809.DotNetty.Core.Handlers
             IdleStateEvent idleStateEvent = evt as IdleStateEvent;
             if (idleStateEvent != null)
             {
-                if (idleStateEvent.State == IdleState.WriterIdle)
+                if (idleStateEvent.State == IdleState.ReaderIdle)
                 {
-                    string channelId = context.Channel.Id.AsShortText();
-                    logger.LogInformation($"{idleStateEvent.State.ToString()}>>>Heartbeat-{channelId}");
-                    //发送主链路保持请求数据包
-                    var package = JT809BusinessType.主链路连接保持请求消息.Create();
-                    JT809Response jT809Response = new JT809Response(package, 100);
-                    context.WriteAndFlushAsync(jT809Response);
+                    context.CloseAsync();
                 }
             }
             base.UserEventTriggered(context, evt);

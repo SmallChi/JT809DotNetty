@@ -3,25 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2016
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809Netty.Core", "JT809Netty.Core\JT809Netty.Core.csproj", "{2054D7E6-53B6-412F-BE9D-C6DABD80A111}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809Netty.DownMasterLink", "JT809Netty.DownMasterLink\JT809Netty.DownMasterLink.csproj", "{3BF1D40D-A17D-4FBC-B3FF-B6DF8B3F13ED}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809.DotNetty.Core", "JT809.DotNetty.Core\JT809.DotNetty.Core.csproj", "{0291C1D6-B4C6-4E7E-984B-0BAFB238727D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C712B2DE-34FE-4D9C-B574-A08B019246E4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809.Protocol", "JT809.Protocol\src\JT809.Protocol\JT809.Protocol.csproj", "{321EE8EE-10D7-4233-8B8A-279BE68FB18A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JT809.DotNetty.Tcp", "JT809.DotNetty.Tcp\JT809.DotNetty.Tcp.csproj", "{9BE94CDE-E813-403A-A68B-45C78BCAAF74}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JT809.DotNetty.Abstractions", "JT809.DotNetty.Abstractions\JT809.DotNetty.Abstractions.csproj", "{EB8276CC-1848-4E7D-B77E-29B22AF767F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809.DotNetty.Abstractions", "JT809.DotNetty.Abstractions\JT809.DotNetty.Abstractions.csproj", "{EB8276CC-1848-4E7D-B77E-29B22AF767F0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{DD4611CF-79A9-45C7-91EB-1E84D22B7D07}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JT809.DotNetty.Tcp.Test", "JT809.DotNetty.Tests\JT809.DotNetty.Tcp.Test\JT809.DotNetty.Tcp.Test.csproj", "{560913C8-B618-46AD-B974-9D324F1ABBAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809.DotNetty.Tcp.Test", "JT809.DotNetty.Tests\JT809.DotNetty.Tcp.Test\JT809.DotNetty.Tcp.Test.csproj", "{560913C8-B618-46AD-B974-9D324F1ABBAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JT809.DotNetty.Host.Test", "JT809.DotNetty.Tests\JT809.DotNetty.Host.Test\JT809.DotNetty.Host.Test.csproj", "{D4E18559-C429-416F-9399-42C0E604D27B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809.DotNetty.Host.Test", "JT809.DotNetty.Tests\JT809.DotNetty.Host.Test\JT809.DotNetty.Host.Test.csproj", "{D4E18559-C429-416F-9399-42C0E604D27B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809.Protocol.Extensions.DependencyInjection", "JT809.Protocol\src\JT809.Protocol.Extensions.DependencyInjection\JT809.Protocol.Extensions.DependencyInjection.csproj", "{975D959C-7C0B-418E-838E-EB383E912F8C}"
 EndProject
@@ -31,14 +25,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2054D7E6-53B6-412F-BE9D-C6DABD80A111}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2054D7E6-53B6-412F-BE9D-C6DABD80A111}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2054D7E6-53B6-412F-BE9D-C6DABD80A111}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2054D7E6-53B6-412F-BE9D-C6DABD80A111}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3BF1D40D-A17D-4FBC-B3FF-B6DF8B3F13ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3BF1D40D-A17D-4FBC-B3FF-B6DF8B3F13ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3BF1D40D-A17D-4FBC-B3FF-B6DF8B3F13ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3BF1D40D-A17D-4FBC-B3FF-B6DF8B3F13ED}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0291C1D6-B4C6-4E7E-984B-0BAFB238727D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0291C1D6-B4C6-4E7E-984B-0BAFB238727D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0291C1D6-B4C6-4E7E-984B-0BAFB238727D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -47,10 +33,6 @@ Global
 		{321EE8EE-10D7-4233-8B8A-279BE68FB18A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{321EE8EE-10D7-4233-8B8A-279BE68FB18A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{321EE8EE-10D7-4233-8B8A-279BE68FB18A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9BE94CDE-E813-403A-A68B-45C78BCAAF74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9BE94CDE-E813-403A-A68B-45C78BCAAF74}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9BE94CDE-E813-403A-A68B-45C78BCAAF74}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9BE94CDE-E813-403A-A68B-45C78BCAAF74}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EB8276CC-1848-4E7D-B77E-29B22AF767F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EB8276CC-1848-4E7D-B77E-29B22AF767F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB8276CC-1848-4E7D-B77E-29B22AF767F0}.Release|Any CPU.ActiveCfg = Release|Any CPU

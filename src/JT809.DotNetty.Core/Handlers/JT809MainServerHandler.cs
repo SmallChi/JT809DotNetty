@@ -11,27 +11,24 @@ using JT809.DotNetty.Core.Enums;
 namespace JT809.DotNetty.Core.Handlers
 {
     /// <summary>
+    /// 上级平台
     /// JT809主链路服务端处理程序
     /// </summary>
     internal class JT809MainServerHandler : SimpleChannelInboundHandler<byte[]>
     {
-        private readonly JT809MainMsgIdHandlerBase handler;
+        private readonly JT809SuperiorMsgIdReceiveHandlerBase handler;
         
-        private readonly JT809SessionManager jT809SessionManager;
-
         private readonly JT809AtomicCounterService jT809AtomicCounterService;
 
         private readonly ILogger<JT809MainServerHandler> logger;
 
         public JT809MainServerHandler(
             ILoggerFactory loggerFactory,
-            JT809MainMsgIdHandlerBase handler,
-            JT809AtomicCounterServiceFactory jT809AtomicCounterServiceFactorty,
-            JT809SessionManager jT809SessionManager
+            JT809SuperiorMsgIdReceiveHandlerBase handler,
+            JT809AtomicCounterServiceFactory jT809AtomicCounterServiceFactorty
             )
         {
             this.handler = handler;
-            this.jT809SessionManager = jT809SessionManager;
             this.jT809AtomicCounterService = jT809AtomicCounterServiceFactorty.Create(JT809AtomicCounterType.ServerMain.ToString()); ;
             logger = loggerFactory.CreateLogger<JT809MainServerHandler>();
         }
@@ -47,7 +44,6 @@ namespace JT809.DotNetty.Core.Handlers
                 {
                     logger.LogDebug("accept package success count<<<" + jT809AtomicCounterService.MsgSuccessCount.ToString());
                 }
-                jT809SessionManager.TryAdd(ctx.Channel, jT809Package.Header.MsgGNSSCENTERID);
                 Func<JT809Request, JT809Response> handlerFunc;
                 if (handler.HandlerDict.TryGetValue(jT809Package.Header.BusinessType, out handlerFunc))
                 {

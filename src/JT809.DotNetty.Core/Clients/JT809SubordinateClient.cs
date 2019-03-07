@@ -15,13 +15,10 @@ using JT809.Protocol.MessageBody;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace JT809.DotNetty.Core.Links
+namespace JT809.DotNetty.Core.Clients
 {
     /// <summary>
     /// 从链路客户端
@@ -57,26 +54,25 @@ namespace JT809.DotNetty.Core.Links
             group = new MultithreadEventLoopGroup();
             bootstrap = new Bootstrap();
             bootstrap.Group(group)
-              .Channel<TcpSocketChannel>()
-              .Option(ChannelOption.TcpNodelay, true)
-              .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
-              {
-                  IChannelPipeline pipeline = channel.Pipeline;
-                  //下级平台1分钟发送心跳
-                  //上级平台是3分钟没有发送就断开连接
-
-                  using (var scope = serviceProvider.CreateScope())
-                  {
-                      pipeline.AddLast("jt809SubLinkTcpBuffer", new DelimiterBasedFrameDecoder(int.MaxValue,
-                                  Unpooled.CopiedBuffer(new byte[] { JT809Package.BEGINFLAG }),
-                                  Unpooled.CopiedBuffer(new byte[] { JT809Package.ENDFLAG })));
-                      pipeline.AddLast("jt809SubLinkSystemIdleState", new IdleStateHandler(180, 10, 200));
-                      pipeline.AddLast("jt809SubLinkTcpEncode", scope.ServiceProvider.GetRequiredService<JT809Encoder>());
-                      pipeline.AddLast("jt809SubLinkTcpDecode", scope.ServiceProvider.GetRequiredService<JT809Decoder>());
-                      pipeline.AddLast("jt809SubLinkConnection", scope.ServiceProvider.GetRequiredService<JT809SubordinateConnectionHandler>());
-
-                  }
-              }));
+                .Channel<TcpSocketChannel>()
+                .Option(ChannelOption.TcpNodelay, true)
+                .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
+                {
+                    IChannelPipeline pipeline = channel.Pipeline;
+                    //下级平台1分钟发送心跳
+                    //上级平台是3分钟没有发送就断开连接
+                    using (var scope = serviceProvider.CreateScope())
+                    {
+                        pipeline.AddLast("jt809SubClientBuffer", new DelimiterBasedFrameDecoder(int.MaxValue,
+                                    Unpooled.CopiedBuffer(new byte[] { JT809Package.BEGINFLAG }),
+                                    Unpooled.CopiedBuffer(new byte[] { JT809Package.ENDFLAG })));
+                        pipeline.AddLast("jt809SubClientSystemIdleState", new IdleStateHandler(180, 60, 200));
+                        pipeline.AddLast("jt809SubClientEncode", scope.ServiceProvider.GetRequiredService<JT809Encoder>());
+                        pipeline.AddLast("jt809SubClientDecode", scope.ServiceProvider.GetRequiredService<JT809Decoder>());
+                        pipeline.AddLast("jt809SubClientConnection", scope.ServiceProvider.GetRequiredService<JT809SubordinateClientConnectionHandler>());
+                        pipeline.AddLast("jt809SubClientServer", scope.ServiceProvider.GetRequiredService<JT809SubordinateClientHandler>());
+                    }
+                }));
         }
 
         public async void ConnectAsync(string ip,int port,uint verifyCode,int delay=3000)

@@ -18,30 +18,31 @@ using JT809.Protocol;
 using JT809.DotNetty.Core.Codecs;
 using JT809.DotNetty.Core.Handlers;
 
-namespace JT809.DotNetty.Core.Services
+
+namespace JT809.DotNetty.Core.Servers
 {
     /// <summary>
-    /// JT809 Tcp网关服务
+    /// JT809 从链路服务器
     /// </summary>
-    internal class JT809MainServerHost : IHostedService
+    internal class JT809SubordinateServerHost : IHostedService
     {
         private readonly IServiceProvider serviceProvider;
-        private readonly JT809Configuration configuration;
-        private readonly ILogger<JT809MainServerHost> logger;
+        private readonly JT809InferiorPlatformOptions configuration;
+        private readonly ILogger<JT809SubordinateServerHost> logger;
         private DispatcherEventLoopGroup bossGroup;
         private WorkerEventLoopGroup workerGroup;
         private IChannel bootstrapChannel;
         private IByteBufferAllocator serverBufferAllocator;
         private ILoggerFactory loggerFactory;
 
-        public JT809MainServerHost(
+        public JT809SubordinateServerHost(
             IServiceProvider provider,
             ILoggerFactory loggerFactory,
-            IOptions<JT809Configuration> jT809ConfigurationAccessor)
+            IOptions<JT809InferiorPlatformOptions> jT809ConfigurationAccessor)
         {
             serviceProvider = provider;
             configuration = jT809ConfigurationAccessor.Value;
-            logger = loggerFactory.CreateLogger<JT809MainServerHost>();
+            logger = loggerFactory.CreateLogger<JT809SubordinateServerHost>();
             this.loggerFactory = loggerFactory;
         }
 
@@ -66,22 +67,19 @@ namespace JT809.DotNetty.Core.Services
                .ChildHandler(new ActionChannelInitializer<IChannel>(channel =>
                {
                    IChannelPipeline pipeline = channel.Pipeline;
-                   channel.Pipeline.AddLast("jt809MainBuffer", new DelimiterBasedFrameDecoder(int.MaxValue,
-                                  Unpooled.CopiedBuffer(new byte[] { JT809Package.BEGINFLAG }),
-                                  Unpooled.CopiedBuffer(new byte[] { JT809Package.ENDFLAG })));
-                   channel.Pipeline.AddLast("jt809MainSystemIdleState", new IdleStateHandler(
-                                            configuration.ReaderIdleTimeSeconds,
-                                            configuration.WriterIdleTimeSeconds,
-                                            configuration.AllIdleTimeSeconds));
-                   pipeline.AddLast("jt809MainEncode", new JT809Encoder());
-                   pipeline.AddLast("jt809MainDecode", new JT809Decoder());
-                   channel.Pipeline.AddLast("jt809MainConnection", new JT809MainServerConnectionHandler(loggerFactory));
                    using (var scope = serviceProvider.CreateScope())
                    {
-                       channel.Pipeline.AddLast("jt809MainService", scope.ServiceProvider.GetRequiredService<JT809MainServerHandler>());
+                       channel.Pipeline.AddLast("jt809SubServerBuffer", new DelimiterBasedFrameDecoder(int.MaxValue,
+                                Unpooled.CopiedBuffer(new byte[] { JT809Package.BEGINFLAG }),
+                                Unpooled.CopiedBuffer(new byte[] { JT809Package.ENDFLAG })));
+                       channel.Pipeline.AddLast("jt809SubServerSystemIdleState", new IdleStateHandler(180, 200, 200));
+                       pipeline.AddLast("jt809SubServerEncode", scope.ServiceProvider.GetRequiredService<JT809Encoder>());
+                       pipeline.AddLast("jt809SubServerDecode", scope.ServiceProvider.GetRequiredService<JT809Decoder>());
+                       channel.Pipeline.AddLast("jt809SubServerConnection", scope.ServiceProvider.GetRequiredService<JT809SubordinateServerConnectionHandler>());
+                       channel.Pipeline.AddLast("jt809SubServerService", scope.ServiceProvider.GetRequiredService<JT809SubordinateServerHandler>());
                    }
                }));
-            logger.LogInformation($"JT809 TCP Server start at {IPAddress.Any}:{configuration.TcpPort}.");
+            logger.LogInformation($"JT809 Subordinate Link Server start at {IPAddress.Any}:{configuration.TcpPort}.");
             return bootstrap.BindAsync(configuration.TcpPort)
                 .ContinueWith(i => bootstrapChannel = i.Result);
         }

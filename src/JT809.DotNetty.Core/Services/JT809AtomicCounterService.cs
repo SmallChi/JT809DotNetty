@@ -1,13 +1,11 @@
-﻿using JT809.DotNetty.Core.Enums;
-using JT809.DotNetty.Core.Internal;
-using JT809.DotNetty.Core.Metadata;
+﻿using JT809.DotNetty.Core.Metadata;
 
 namespace JT809.DotNetty.Core.Services
 {
     /// <summary>
     /// Tcp计数包服务
     /// </summary>
-    public class JT809AtomicCounterService
+    internal class JT809AtomicCounterService
     {
         private readonly JT809AtomicCounter MsgSuccessCounter;
 

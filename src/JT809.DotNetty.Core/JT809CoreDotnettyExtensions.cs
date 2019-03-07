@@ -6,19 +6,20 @@ using JT809.DotNetty.Core.Enums;
 using JT809.DotNetty.Core.Handlers;
 using JT809.DotNetty.Core.Interfaces;
 using JT809.DotNetty.Core.Internal;
-using JT809.DotNetty.Core.Links;
+using JT809.DotNetty.Core.Clients;
 using JT809.DotNetty.Core.Metadata;
 using JT809.DotNetty.Core.Services;
+using JT809.DotNetty.Core.Servers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json;
 using System;
 using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Options;
+
 
 [assembly: InternalsVisibleTo("JT809.DotNetty.Core.Test")]
-[assembly: InternalsVisibleTo("JT809.DotNetty.Tcp.Test")]
-[assembly: InternalsVisibleTo("JT809.DotNetty.Udp.Test")]
 [assembly: InternalsVisibleTo("JT809.DotNetty.WebApi.Test")]
 
 namespace JT809.DotNetty.Core
@@ -42,7 +43,7 @@ namespace JT809.DotNetty.Core
             });
         }
 
-        public static IServiceCollection AddJT809Core(this IServiceCollection  serviceDescriptors, IConfiguration configuration, Newtonsoft.Json.JsonSerializerSettings settings=null)
+        public static IServiceCollection AddJT809Core(this IServiceCollection serviceDescriptors,IConfiguration configuration, Newtonsoft.Json.JsonSerializerSettings settings = null)
         {
             if (settings != null)
             {
@@ -56,22 +57,64 @@ namespace JT809.DotNetty.Core
             }
             serviceDescriptors.Configure<JT809Configuration>(configuration.GetSection("JT809Configuration"));
             serviceDescriptors.TryAddSingleton<JT809SimpleSystemCollectService>();
-            serviceDescriptors.TryAddSingleton<IJT809VerifyCodeGenerator, JT809VerifyCodeGeneratorDefaultImpl>();
+            //JT809计数器服务工厂
             serviceDescriptors.TryAddSingleton<JT809AtomicCounterServiceFactory>();
             //JT809编解码器
             serviceDescriptors.TryAddScoped<JT809Decoder>();
             serviceDescriptors.TryAddScoped<JT809Encoder>();
-            //主从链路连接处理器
-            serviceDescriptors.TryAddScoped<JT809SubordinateConnectionHandler>();
-            serviceDescriptors.TryAddScoped<JT809MainServerConnectionHandler>();
-            //从链路客户端
-            serviceDescriptors.TryAddSingleton<JT809SubordinateClient>();
-            //主从链路消息默认业务处理器实现
-            serviceDescriptors.TryAddSingleton<JT809MainMsgIdHandlerBase, JT809MainMsgIdDefaultHandler>();
-            serviceDescriptors.TryAddSingleton<JT809SubordinateMsgIdHandlerBase, JT809SubordinateMsgIdDefaultHandler>();
+            return serviceDescriptors;
+        }
+
+        /// <summary>
+        /// 下级平台
+        /// 主链路为客户端
+        /// 从链路为服务端
+        /// </summary>
+        /// <param name="serviceDescriptors"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddJT809InferiorPlatform(this IServiceCollection  serviceDescriptors, Action<IOptions<JT809InferiorPlatformOptions>> options)
+        {
+            serviceDescriptors.Configure<JT809InferiorPlatformOptions>(options);
+            //主从链路客户端和服务端连接处理器
+            serviceDescriptors.TryAddScoped<JT809MainClientConnectionHandler>();
+            serviceDescriptors.TryAddScoped<JT809SubordinateServerConnectionHandler>();
+            //主链路服务端会话管理
+            //serviceDescriptors.TryAddSingleton<JT809MainSessionManager>();
+            //主从链路接收消息默认业务处理器
+            serviceDescriptors.TryAddSingleton<JT809InferiorMsgIdReceiveHandlerBase, JT809InferiorMsgIdReceiveDefaultHandler>();
             //主从链路消息接收处理器
             serviceDescriptors.TryAddScoped<JT809MainServerHandler>();
             serviceDescriptors.TryAddScoped<JT809SubordinateServerHandler>();
+            //主链路客户端
+            serviceDescriptors.TryAddSingleton<JT809MainClient>();
+            //从链路服务端
+            serviceDescriptors.AddHostedService<JT809SubordinateServerHost>();
+            return serviceDescriptors;
+        }
+
+        /// <summary>
+        /// 上级平台
+        /// 主链路为服务端
+        /// 从链路为客户端
+        /// </summary>
+        /// <param name="serviceDescriptors"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddJT809SuperiorPlatform(this IServiceCollection serviceDescriptors,Action<IOptions<JT809SuperiorPlatformOptions>> options)
+        {
+            serviceDescriptors.Configure<JT809SuperiorPlatformOptions>(options);
+            serviceDescriptors.TryAddSingleton<IJT809VerifyCodeGenerator, JT809VerifyCodeGeneratorDefaultImpl>();
+            //主从链路客户端和服务端连接处理器
+            serviceDescriptors.TryAddScoped<JT809MainServerConnectionHandler>();
+            serviceDescriptors.TryAddScoped<JT809SubordinateClientConnectionHandler>();
+            //主链路服务端会话管理
+            //serviceDescriptors.TryAddSingleton<JT809MainSessionManager>();
+            //主从链路接收消息默认业务处理器
+            serviceDescriptors.TryAddSingleton<JT809SuperiorMsgIdReceiveHandlerBase, JT809SuperiorMsgIdReceiveDefaultHandler>();
+            //主从链路消息接收处理器
+            serviceDescriptors.TryAddScoped<JT809MainServerHandler>();
+            serviceDescriptors.TryAddScoped<JT809SubordinateClientHandler>();
+            //从链路客户端
+            serviceDescriptors.TryAddSingleton<JT809SubordinateClient>();
             //主链路服务端
             serviceDescriptors.AddHostedService<JT809MainServerHost>();
             return serviceDescriptors;

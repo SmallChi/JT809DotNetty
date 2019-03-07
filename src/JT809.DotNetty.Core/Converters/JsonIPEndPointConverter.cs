@@ -5,7 +5,7 @@ using System.Net;
 
 namespace JT809.DotNetty.Core.Converters
 {
-    public class JsonIPEndPointConverter: JsonConverter
+    internal class JsonIPEndPointConverter: JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {

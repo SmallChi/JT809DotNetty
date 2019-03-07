@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 
-namespace JT809.DotNetty.Core.Links
+namespace JT809.DotNetty.Core.Clients
 {
     /// <summary>
     /// 主链路客户端
@@ -52,18 +52,18 @@ namespace JT809.DotNetty.Core.Links
               .Handler(new ActionChannelInitializer<ISocketChannel>(channel =>
               {
                   IChannelPipeline pipeline = channel.Pipeline;
-                      //下级平台1分钟发送心跳
-                      //上级平台是3分钟没有发送就断开连接
-                      using (var scope = serviceProvider.CreateScope())
+                  //下级平台1分钟发送心跳
+                  //上级平台是3分钟没有发送就断开连接
+                  using (var scope = serviceProvider.CreateScope())
                   {
-                      pipeline.AddLast("jt809MainLinkTcpBuffer", new DelimiterBasedFrameDecoder(int.MaxValue,
+                      pipeline.AddLast("jt809MainClientBuffer", new DelimiterBasedFrameDecoder(int.MaxValue,
                            Unpooled.CopiedBuffer(new byte[] { JT809Package.BEGINFLAG }),
                            Unpooled.CopiedBuffer(new byte[] { JT809Package.ENDFLAG })));
-                      pipeline.AddLast("jt809MainLinkSystemIdleState", new IdleStateHandler(180, 60, 200));
-                      pipeline.AddLast("jt809MainLinkTcpEncode", scope.ServiceProvider.GetRequiredService<JT809Encoder>());
-                      pipeline.AddLast("jt809MainLinkTcpDecode", scope.ServiceProvider.GetRequiredService<JT809Decoder>());
-                      pipeline.AddLast("jt809MainLinkConnection", scope.ServiceProvider.GetRequiredService<JT809MainServerConnectionHandler>());
-
+                      pipeline.AddLast("jt809MainClientSystemIdleState", new IdleStateHandler(180, 60, 200));
+                      pipeline.AddLast("jt809MainClientEncode", scope.ServiceProvider.GetRequiredService<JT809Encoder>());
+                      pipeline.AddLast("jt809MainClientDecode", scope.ServiceProvider.GetRequiredService<JT809Decoder>());
+                      pipeline.AddLast("jt809MainClientConnection", scope.ServiceProvider.GetRequiredService<JT809MainClientConnectionHandler>());
+                      pipeline.AddLast("jt809MainClientServer", scope.ServiceProvider.GetRequiredService<JT809MainServerHandler>());
                   }
               }));
         }

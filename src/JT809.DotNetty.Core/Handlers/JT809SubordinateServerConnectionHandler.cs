@@ -1,10 +1,5 @@
-﻿using DotNetty.Buffers;
-using DotNetty.Handlers.Timeout;
+﻿using DotNetty.Handlers.Timeout;
 using DotNetty.Transport.Channels;
-using JT809.DotNetty.Core.Metadata;
-using JT809.Protocol;
-using JT809.Protocol.Enums;
-using JT809.Protocol.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
@@ -12,17 +7,17 @@ using System.Threading.Tasks;
 namespace JT809.DotNetty.Core.Handlers
 {
     /// <summary>
-    /// JT809从链路连接处理器
+    /// JT809 从链路服务端连接处理器
     /// </summary>
-    public class JT809SubordinateConnectionHandler: ChannelHandlerAdapter
+    internal class JT809SubordinateServerConnectionHandler: ChannelHandlerAdapter
     {
 
-        private readonly ILogger<JT809SubordinateConnectionHandler> logger;
+        private readonly ILogger<JT809SubordinateServerConnectionHandler> logger;
 
-        public JT809SubordinateConnectionHandler(
+        public JT809SubordinateServerConnectionHandler(
             ILoggerFactory loggerFactory)
         {
-            logger = loggerFactory.CreateLogger<JT809SubordinateConnectionHandler>();
+            logger = loggerFactory.CreateLogger<JT809SubordinateServerConnectionHandler>();
         }
 
         /// <summary>
@@ -74,15 +69,12 @@ namespace JT809.DotNetty.Core.Handlers
             IdleStateEvent idleStateEvent = evt as IdleStateEvent;
             if (idleStateEvent != null)
             {
-                if (idleStateEvent.State == IdleState.WriterIdle)
+                if (idleStateEvent.State == IdleState.ReaderIdle)
                 {
-                    string channelId = context.Channel.Id.AsShortText();
-                    logger.LogInformation($"{idleStateEvent.State.ToString()}>>>Heartbeat-{channelId}");
-                    //发送从链路保持请求数据包
-                    var package = JT809BusinessType.从链路连接保持请求消息.Create();
-                    JT809Response jT809Response = new JT809Response(package, 100);
-                    context.WriteAndFlushAsync(jT809Response);
-                    //context.WriteAndFlushAsync(Unpooled.WrappedBuffer(JT809Serializer.Serialize(package,100)));
+                    if (idleStateEvent.State == IdleState.ReaderIdle)
+                    {
+                        context.CloseAsync();
+                    }
                 }
             }
             base.UserEventTriggered(context, evt);

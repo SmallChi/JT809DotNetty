@@ -25,7 +25,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\..\JT809.DotNetty.Tcp\JT809.DotNetty.Tcp.csproj" />
+    <ProjectReference Include="..\..\JT809.DotNetty.Core\JT809.DotNetty.Core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -19,7 +19,7 @@ namespace JT809.DotNetty.Tcp
     {
         public static IServiceCollection AddJT809TcpHost(this IServiceCollection  serviceDescriptors)
         {
-            serviceDescriptors.TryAddSingleton<JT809SessionManager>();
+            serviceDescriptors.TryAddSingleton<JT809MainSessionManager>();
             serviceDescriptors.TryAddSingleton<JT809MainMsgIdHandlerBase, JT809MsgIdDefaultTcpHandler>();
             serviceDescriptors.TryAddScoped<JT809TcpConnectionHandler>();
             serviceDescriptors.TryAddScoped<JT809Decoder>();

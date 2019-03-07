@@ -2,6 +2,7 @@
 using JT809.DotNetty.Core.Handlers;
 using JT809.DotNetty.Core.Interfaces;
 using JT809.DotNetty.Core.Links;
+using JT809.DotNetty.Core.Session;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,7 +15,7 @@ namespace JT809.DotNetty.Tcp.Handlers
     internal class JT809MsgIdDefaultTcpHandler : JT809MainMsgIdHandlerBase
     {
         public JT809MsgIdDefaultTcpHandler(IJT809VerifyCodeGenerator verifyCodeGenerator, 
-            JT809SubordinateClient subordinateLinkClient, JT809SessionManager sessionManager)
+            JT809SubordinateClient subordinateLinkClient, JT809MainSessionManager sessionManager)
             : base(verifyCodeGenerator, subordinateLinkClient, sessionManager)
         {
         }

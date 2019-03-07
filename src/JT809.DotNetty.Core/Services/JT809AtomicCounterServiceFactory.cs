@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Collections.Concurrent;
 
 namespace JT809.DotNetty.Core.Services
 {
-    public  class JT809AtomicCounterServiceFactory
+    internal class JT809AtomicCounterServiceFactory
     {
         private static readonly ConcurrentDictionary<string, JT809AtomicCounterService> cache;
 

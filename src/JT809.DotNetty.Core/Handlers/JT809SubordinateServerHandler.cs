@@ -5,20 +5,18 @@ using System;
 using Microsoft.Extensions.Logging;
 using JT809.Protocol.Exceptions;
 using JT809.DotNetty.Core.Services;
-using JT809.DotNetty.Core;
-using JT809.DotNetty.Core.Handlers;
 using JT809.DotNetty.Core.Metadata;
-using JT809.DotNetty.Core.Internal;
 using JT809.DotNetty.Core.Enums;
 
 namespace JT809.DotNetty.Core.Handlers
 {
     /// <summary>
+    /// 下级平台
     /// JT809从链路业务处理程序
     /// </summary>
     internal class JT809SubordinateServerHandler : SimpleChannelInboundHandler<byte[]>
     {
-        private readonly JT809SubordinateMsgIdHandlerBase handler;
+        private readonly JT809InferiorMsgIdReceiveHandlerBase handler;
         
         private readonly JT809AtomicCounterService jT809AtomicCounterService;
 
@@ -26,12 +24,12 @@ namespace JT809.DotNetty.Core.Handlers
 
         public JT809SubordinateServerHandler(
             ILoggerFactory loggerFactory,
-            JT809SubordinateMsgIdHandlerBase handler,
+            JT809InferiorMsgIdReceiveHandlerBase handler,
             JT809AtomicCounterServiceFactory jT809AtomicCounterServiceFactorty
             )
         {
             this.handler = handler;
-            this.jT809AtomicCounterService = jT809AtomicCounterServiceFactorty.Create(JT809AtomicCounterType.ClientSubordinate.ToString());
+            this.jT809AtomicCounterService = jT809AtomicCounterServiceFactorty.Create(JT809AtomicCounterType.ServerSubordinate.ToString());
             logger = loggerFactory.CreateLogger<JT809SubordinateServerHandler>();
         }
 

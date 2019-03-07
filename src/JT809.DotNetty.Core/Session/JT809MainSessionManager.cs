@@ -7,23 +7,23 @@ using DotNetty.Transport.Channels;
 using JT809.DotNetty.Abstractions;
 using JT809.DotNetty.Core.Metadata;
 
-namespace JT809.DotNetty.Core
+namespace JT809.DotNetty.Core.Session
 {
     /// <summary>
-    /// JT809 Tcp会话管理
+    /// JT809 主链路会话管理
     /// </summary>
-    public class JT809SessionManager
+    public class JT809MainSessionManager
     {
-        private readonly ILogger<JT809SessionManager> logger;
+        private readonly ILogger<JT809MainSessionManager> logger;
 
-        private readonly IJT809SessionPublishing jT809SessionPublishing;
+        //private readonly IJT809SessionPublishing jT809SessionPublishing;
 
-        public JT809SessionManager(
-            IJT809SessionPublishing jT809SessionPublishing,
+        public JT809MainSessionManager(
+            //IJT809SessionPublishing jT809SessionPublishing,
             ILoggerFactory loggerFactory)
         {
-            this.jT809SessionPublishing = jT809SessionPublishing;
-            logger = loggerFactory.CreateLogger<JT809SessionManager>();
+            //this.jT809SessionPublishing = jT809SessionPublishing;
+            logger = loggerFactory.CreateLogger<JT809MainSessionManager>();
         }
 
         private ConcurrentDictionary<uint, JT809Session> SessionIdDict = new ConcurrentDictionary<uint, JT809Session>();
@@ -62,7 +62,7 @@ namespace JT809.DotNetty.Core
             if (SessionIdDict.ContainsKey(msgGNSSCENTERID)) return;
             if (SessionIdDict.TryAdd(msgGNSSCENTERID, new JT809Session(channel, msgGNSSCENTERID)))
             {
-                jT809SessionPublishing.PublishAsync(JT809Constants.SessionOnline, msgGNSSCENTERID.ToString());
+                //jT809SessionPublishing.PublishAsync(JT809Constants.SessionOnline, msgGNSSCENTERID.ToString());
             }
         }
 
@@ -76,7 +76,7 @@ namespace JT809.DotNetty.Core
             if (SessionIdDict.TryRemove(msgGNSSCENTERID, out JT809Session jT808SessionRemove))
             {
                 logger.LogInformation($">>>{msgGNSSCENTERID} Session Remove.");
-                jT809SessionPublishing.PublishAsync(JT809Constants.SessionOffline, msgGNSSCENTERID.ToString());
+                //jT809SessionPublishing.PublishAsync(JT809Constants.SessionOffline, msgGNSSCENTERID.ToString());
                 return jT808SessionRemove;
             }
             else
@@ -96,7 +96,7 @@ namespace JT809.DotNetty.Core
                 }
                 string nos = string.Join(",", keys);
                 logger.LogInformation($">>>{nos} Channel Remove.");
-                jT809SessionPublishing.PublishAsync(JT809Constants.SessionOffline, nos);
+                //jT809SessionPublishing.PublishAsync(JT809Constants.SessionOffline, nos);
             }      
         }
 
