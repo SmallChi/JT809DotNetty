@@ -1,5 +1,6 @@
 ﻿using DotNetty.Handlers.Timeout;
 using DotNetty.Transport.Channels;
+using JT809.DotNetty.Core.Session;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
@@ -14,10 +15,14 @@ namespace JT809.DotNetty.Core.Handlers
 
         private readonly ILogger<JT809MainServerConnectionHandler> logger;
 
+        private readonly JT809SuperiorMainSessionManager jT809SuperiorMainSessionManager;
+
         public JT809MainServerConnectionHandler(
+            JT809SuperiorMainSessionManager jT809SuperiorMainSessionManager,
             ILoggerFactory loggerFactory)
         {
             logger = loggerFactory.CreateLogger<JT809MainServerConnectionHandler>();
+            this.jT809SuperiorMainSessionManager = jT809SuperiorMainSessionManager;
         }
 
         /// <summary>
@@ -41,6 +46,7 @@ namespace JT809.DotNetty.Core.Handlers
             string channelId = context.Channel.Id.AsShortText();
             if (logger.IsEnabled(LogLevel.Debug))
                 logger.LogDebug($">>>{ channelId } The client disconnects from the server.");
+            jT809SuperiorMainSessionManager.RemoveSessionByChannel(context.Channel);
             base.ChannelInactive(context);
         }
 
@@ -54,6 +60,7 @@ namespace JT809.DotNetty.Core.Handlers
             string channelId = context.Channel.Id.AsShortText();
             if (logger.IsEnabled(LogLevel.Debug))
                 logger.LogDebug($"<<<{ channelId } The server disconnects from the client.");
+            jT809SuperiorMainSessionManager.RemoveSessionByChannel(context.Channel);
             return base.CloseAsync(context);
         }
 
@@ -81,6 +88,7 @@ namespace JT809.DotNetty.Core.Handlers
         {
             string channelId = context.Channel.Id.AsShortText();
             logger.LogError(exception, $"{channelId} {exception.Message}");
+            jT809SuperiorMainSessionManager.RemoveSessionByChannel(context.Channel);
             context.CloseAsync();
         }
     }

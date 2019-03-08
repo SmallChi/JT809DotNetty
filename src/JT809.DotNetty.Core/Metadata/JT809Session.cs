@@ -19,7 +19,7 @@ namespace JT809.DotNetty.Core.Metadata
         /// </summary>
         public uint MsgGNSSCENTERID { get; set; }
 
-        public IChannel Channel { get;}
+        public IChannel Channel { get; set; }
 
         public DateTime LastActiveTime { get; set; }
 

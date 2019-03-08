@@ -9,7 +9,7 @@ namespace JT809.DotNetty.Core.Services
     /// <summary>
     /// 简单系统收集服务
     /// </summary>
-    internal class JT809SimpleSystemCollectService
+    public class JT809SimpleSystemCollectService
     {
         /// <summary>
         /// 获取系统当前进程使用情况

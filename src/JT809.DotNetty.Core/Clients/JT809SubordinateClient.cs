@@ -30,7 +30,7 @@ namespace JT809.DotNetty.Core.Clients
 
         private MultithreadEventLoopGroup group;
 
-        private IChannel channel;
+        public IChannel Channel { get; private set; }
 
         private readonly ILogger<JT809SubordinateClient> logger;
 
@@ -81,14 +81,14 @@ namespace JT809.DotNetty.Core.Clients
             await Task.Delay(delay);
             try
             {
-                if (channel == null)
+                if (Channel == null)
                 {
-                    channel = await bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(ip), port));
+                    Channel = await bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(ip), port));
                 }
                 else
                 {
-                    await channel.CloseAsync();
-                    channel = await bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(ip), port));
+                    await Channel.CloseAsync();
+                    Channel = await bootstrap.ConnectAsync(new IPEndPoint(IPAddress.Parse(ip), port));
                 }
             }
             catch (AggregateException ex)
@@ -103,11 +103,11 @@ namespace JT809.DotNetty.Core.Clients
 
         public async void SendAsync(JT809Response jT809Response)
         {
-            if (channel == null) throw new NullReferenceException("Channel Not Open");
+            if (Channel == null) throw new NullReferenceException("Channel Not Open");
             if (jT809Response == null) throw new ArgumentNullException("Data is null");
-            if (channel.Open && channel.Active)
+            if (Channel.Open && Channel.Active)
             {
-                await channel.WriteAndFlushAsync(jT809Response);
+                await Channel.WriteAndFlushAsync(jT809Response);
             }
         }
 
@@ -115,8 +115,8 @@ namespace JT809.DotNetty.Core.Clients
         {
             get
             {
-                if (channel == null) return false;
-                return channel.Open && channel.Active;
+                if (Channel == null) return false;
+                return Channel.Open && Channel.Active;
             }
         }
 
@@ -136,7 +136,7 @@ namespace JT809.DotNetty.Core.Clients
                         VerifyCode = verifyCodeGenerator.Get()
                     });
                     JT809Response jT809Response = new JT809Response(package, 100);
-                    channel.WriteAndFlushAsync(jT809Response);
+                    Channel.WriteAndFlushAsync(jT809Response);
                     logger.LogInformation($"发送从链路注销请求>>>{JT809Serializer.Serialize(package, 100).ToHexString()}");
                 }
                 catch (Exception ex)
@@ -146,7 +146,7 @@ namespace JT809.DotNetty.Core.Clients
                 finally
                 {
                     //清理托管资源
-                    channel.CloseAsync();
+                    Channel.CloseAsync();
                     group.ShutdownGracefullyAsync(TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(3));
                 }
             }

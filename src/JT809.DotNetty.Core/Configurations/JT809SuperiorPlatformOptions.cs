@@ -14,6 +14,8 @@ namespace JT809.DotNetty.Core.Configurations
 
         public int TcpPort { get; set; } = 819;
 
+        public int WebApiPort { get; set; } = 829;
+
         public int QuietPeriodSeconds { get; set; } = 1;
 
         public TimeSpan QuietPeriodTimeSpan => TimeSpan.FromSeconds(QuietPeriodSeconds);

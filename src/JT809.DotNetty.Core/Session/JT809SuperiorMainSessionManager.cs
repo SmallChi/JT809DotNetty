@@ -4,26 +4,26 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using DotNetty.Transport.Channels;
-using JT809.DotNetty.Abstractions;
 using JT809.DotNetty.Core.Metadata;
 
 namespace JT809.DotNetty.Core.Session
 {
     /// <summary>
-    /// JT809 主链路会话管理
+    /// 上级平台
+    /// JT809主链路会话管理
     /// </summary>
-    public class JT809MainSessionManager
+    public class JT809SuperiorMainSessionManager
     {
-        private readonly ILogger<JT809MainSessionManager> logger;
+        private readonly ILogger<JT809SuperiorMainSessionManager> logger;
 
         //private readonly IJT809SessionPublishing jT809SessionPublishing;
 
-        public JT809MainSessionManager(
+        public JT809SuperiorMainSessionManager(
             //IJT809SessionPublishing jT809SessionPublishing,
             ILoggerFactory loggerFactory)
         {
             //this.jT809SessionPublishing = jT809SessionPublishing;
-            logger = loggerFactory.CreateLogger<JT809MainSessionManager>();
+            logger = loggerFactory.CreateLogger<JT809SuperiorMainSessionManager>();
         }
 
         private ConcurrentDictionary<uint, JT809Session> SessionIdDict = new ConcurrentDictionary<uint, JT809Session>();
@@ -48,20 +48,17 @@ namespace JT809.DotNetty.Core.Session
             }
         }
 
-        public void Heartbeat(uint msgGNSSCENTERID)
-        {
-            if (SessionIdDict.TryGetValue(msgGNSSCENTERID, out JT809Session oldjT808Session))
-            {
-                oldjT808Session.LastActiveTime = DateTime.Now;
-                SessionIdDict.TryUpdate(msgGNSSCENTERID, oldjT808Session, oldjT808Session);
-            }
-        }
-
         public void TryAdd(IChannel channel, uint msgGNSSCENTERID)
         {
-            if (SessionIdDict.ContainsKey(msgGNSSCENTERID)) return;
-            if (SessionIdDict.TryAdd(msgGNSSCENTERID, new JT809Session(channel, msgGNSSCENTERID)))
+            if(SessionIdDict.TryGetValue(msgGNSSCENTERID,out JT809Session jT809Session))
             {
+                jT809Session.LastActiveTime = DateTime.Now;
+                jT809Session.Channel = channel;
+                SessionIdDict.TryUpdate(msgGNSSCENTERID, jT809Session, jT809Session);
+            }
+            else
+            {
+                SessionIdDict.TryAdd(msgGNSSCENTERID, new JT809Session(channel, msgGNSSCENTERID));
                 //jT809SessionPublishing.PublishAsync(JT809Constants.SessionOnline, msgGNSSCENTERID.ToString());
             }
         }

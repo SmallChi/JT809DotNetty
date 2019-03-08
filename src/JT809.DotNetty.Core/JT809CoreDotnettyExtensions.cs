@@ -17,10 +17,10 @@ using Newtonsoft.Json;
 using System;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Options;
-
+using JT808.DotNetty.WebApi;
+using JT809.DotNetty.Core.Session;
 
 [assembly: InternalsVisibleTo("JT809.DotNetty.Core.Test")]
-[assembly: InternalsVisibleTo("JT809.DotNetty.WebApi.Test")]
 
 namespace JT809.DotNetty.Core
 {
@@ -107,7 +107,7 @@ namespace JT809.DotNetty.Core
             serviceDescriptors.TryAddScoped<JT809MainServerConnectionHandler>();
             serviceDescriptors.TryAddScoped<JT809SubordinateClientConnectionHandler>();
             //主链路服务端会话管理
-            //serviceDescriptors.TryAddSingleton<JT809MainSessionManager>();
+            serviceDescriptors.TryAddSingleton<JT809SuperiorMainSessionManager>();
             //主从链路接收消息默认业务处理器
             serviceDescriptors.TryAddSingleton<JT809SuperiorMsgIdReceiveHandlerBase, JT809SuperiorMsgIdReceiveDefaultHandler>();
             //主从链路消息接收处理器
@@ -117,6 +117,10 @@ namespace JT809.DotNetty.Core
             serviceDescriptors.TryAddSingleton<JT809SubordinateClient>();
             //主链路服务端
             serviceDescriptors.AddHostedService<JT809MainServerHost>();
+            //上级平台webapi
+            serviceDescriptors.TryAddSingleton<JT809SuperiorWebAPIHandlerBase, JT809SuperiorWebAPIDefaultHandler>();
+            serviceDescriptors.TryAddScoped<JT809SuperiorWebAPIServerHandler>();
+            serviceDescriptors.AddHostedService<JT809MainWebAPIServerHost>();
             return serviceDescriptors;
         }
     }
