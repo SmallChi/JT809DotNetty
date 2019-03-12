@@ -1,9 +1,11 @@
 ﻿using DotNetty.Handlers.Timeout;
 using DotNetty.Transport.Channels;
+using JT809.DotNetty.Core.Clients;
 using JT809.DotNetty.Core.Metadata;
 using JT809.Protocol.Enums;
 using JT809.Protocol.Extensions;
 using Microsoft.Extensions.Logging;
+using Polly;
 using System;
 using System.Threading.Tasks;
 
@@ -16,11 +18,14 @@ namespace JT809.DotNetty.Core.Handlers
     {
 
         private readonly ILogger<JT809SubordinateClientConnectionHandler> logger;
+        private readonly JT809SubordinateClient subordinateClient;
 
         public JT809SubordinateClientConnectionHandler(
+            JT809SubordinateClient jT809SubordinateClient,
             ILoggerFactory loggerFactory)
         {
             logger = loggerFactory.CreateLogger<JT809SubordinateClientConnectionHandler>();
+            subordinateClient = jT809SubordinateClient;
         }
 
         /// <summary>
@@ -41,6 +46,16 @@ namespace JT809.DotNetty.Core.Handlers
         /// <param name="context"></param>
         public override void ChannelInactive(IChannelHandlerContext context)
         {
+            Policy.HandleResult(context.Channel.Open)
+                     .WaitAndRetryForeverAsync(retryAttempt =>
+                     {
+                         return retryAttempt > 3 ? TimeSpan.FromSeconds(Math.Pow(2, 50)) : TimeSpan.FromSeconds(Math.Pow(2, retryAttempt));//超过重试3次，之后重试都是接近12个小时重试一次
+                     },
+                    (exception, timespan, ctx) =>
+                    {
+                        logger.LogError($"服务端断开{context.Channel.RemoteAddress}，重试结果{exception.Result}，重试次数{timespan}，下次重试间隔(s){ctx.TotalSeconds}");
+                    })
+                    .ExecuteAsync(async () => await subordinateClient.ReConnectAsync(context.Channel.RemoteAddress));
             string channelId = context.Channel.Id.AsShortText();
             if (logger.IsEnabled(LogLevel.Debug))
                 logger.LogDebug($">>>{ channelId } The client disconnects from the server.");

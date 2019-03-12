@@ -1,5 +1,5 @@
 ﻿using JT809.DotNetty.Core;
-using JT809.DotNetty.Tcp;
+using JT809.DotNetty.Core.Configurations;
 using JT809.Protocol.Configs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -45,7 +45,9 @@ namespace JT809.DotNetty.Host.Test
                     services.AddSingleton<ILoggerFactory, LoggerFactory>();
                     services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
                     services.AddJT809Core(hostContext.Configuration)
-                            .AddJT809TcpHost();
+                            .AddJT809SuperiorPlatform(options=> {
+                                options.TcpPort = 839;
+                             });
                 });
 
             await serverHostBuilder.RunConsoleAsync();

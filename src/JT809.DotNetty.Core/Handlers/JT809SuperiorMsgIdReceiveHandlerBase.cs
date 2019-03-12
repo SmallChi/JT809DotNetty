@@ -20,21 +20,20 @@ namespace JT809.DotNetty.Core.Handlers
     public abstract class JT809SuperiorMsgIdReceiveHandlerBase
     {
         protected IJT809VerifyCodeGenerator VerifyCodeGenerator { get; }
-        protected JT809SubordinateClient SubordinateLinkClient { get; }
-        protected JT809Configuration  Configuration { get; }
         protected ILogger Logger { get; }
+        protected IJT809SubordinateLoginService SubordinateLoginService { get; }
+
         /// <summary>
         /// 初始化消息处理业务
         /// </summary>
         protected JT809SuperiorMsgIdReceiveHandlerBase(
             ILoggerFactory loggerFactory,
-            IOptions<JT809Configuration> jT809ConfigurationAccessor,
-            IJT809VerifyCodeGenerator verifyCodeGenerator,
-            JT809SubordinateClient subordinateLinkClient)
+            IJT809SubordinateLoginService jT809SubordinateLoginService,
+            IJT809VerifyCodeGenerator verifyCodeGenerator)
         {
             this.Logger = loggerFactory.CreateLogger<JT809SuperiorMsgIdReceiveHandlerBase>();
             this.VerifyCodeGenerator = verifyCodeGenerator;
-            this.SubordinateLinkClient = subordinateLinkClient;
+            this.SubordinateLoginService = jT809SubordinateLoginService;
             HandlerDict = new Dictionary<JT809BusinessType, Func<JT809Request, JT809Response>>
             {
                 {JT809BusinessType.主链路登录请求消息, Msg0x1001},
@@ -74,11 +73,8 @@ namespace JT809.DotNetty.Core.Handlers
                 Result = JT809_0x1002_Result.成功,
                 VerifyCode = verifyCode
             });
-            if (Configuration.SubordinateClientEnable)
-            {
-                var jT809_0x1001 = request.Package.Bodies as JT809_0x1001;
-                SubordinateLinkClient.ConnectAsync(jT809_0x1001.DownLinkIP, jT809_0x1001.DownLinkPort, verifyCode);
-            }
+            var jT809_0x1001 = request.Package.Bodies as JT809_0x1001;
+            SubordinateLoginService.Login(jT809_0x1001.DownLinkIP, jT809_0x1001.DownLinkPort);
             return new JT809Response(package, 100);
         }
 
@@ -163,7 +159,6 @@ namespace JT809.DotNetty.Core.Handlers
             Logger.LogInformation("从链路连接保持应答消息");
             return null;
         }
-
 
 
         /// <summary>

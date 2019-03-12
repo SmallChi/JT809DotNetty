@@ -72,9 +72,9 @@ namespace JT809.DotNetty.Core
         /// </summary>
         /// <param name="serviceDescriptors"></param>
         /// <returns></returns>
-        public static IServiceCollection AddJT809InferiorPlatform(this IServiceCollection  serviceDescriptors, Action<IOptions<JT809InferiorPlatformOptions>> options)
+        public static IServiceCollection AddJT809InferiorPlatform(this IServiceCollection  serviceDescriptors, Action<JT809InferiorPlatformOptions> options)
         {
-            serviceDescriptors.Configure<JT809InferiorPlatformOptions>(options);
+            serviceDescriptors.Configure(options);
             //主从链路客户端和服务端连接处理器
             serviceDescriptors.TryAddScoped<JT809MainClientConnectionHandler>();
             serviceDescriptors.TryAddScoped<JT809SubordinateServerConnectionHandler>();
@@ -99,9 +99,9 @@ namespace JT809.DotNetty.Core
         /// </summary>
         /// <param name="serviceDescriptors"></param>
         /// <returns></returns>
-        public static IServiceCollection AddJT809SuperiorPlatform(this IServiceCollection serviceDescriptors,Action<IOptions<JT809SuperiorPlatformOptions>> options)
+        public static IServiceCollection AddJT809SuperiorPlatform(this IServiceCollection serviceDescriptors,Action<JT809SuperiorPlatformOptions> options)
         {
-            serviceDescriptors.Configure<JT809SuperiorPlatformOptions>(options);
+            serviceDescriptors.Configure(options);
             serviceDescriptors.TryAddSingleton<IJT809VerifyCodeGenerator, JT809VerifyCodeGeneratorDefaultImpl>();
             //主从链路客户端和服务端连接处理器
             serviceDescriptors.TryAddScoped<JT809MainServerConnectionHandler>();
@@ -113,6 +113,7 @@ namespace JT809.DotNetty.Core
             //主从链路消息接收处理器
             serviceDescriptors.TryAddScoped<JT809MainServerHandler>();
             serviceDescriptors.TryAddScoped<JT809SubordinateClientHandler>();
+            serviceDescriptors.TryAddSingleton<IJT809SubordinateLoginService, JT809SubordinateLoginImplService>();
             //从链路客户端
             serviceDescriptors.TryAddSingleton<JT809SubordinateClient>();
             //主链路服务端

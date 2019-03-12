@@ -1,5 +1,7 @@
 ﻿using DotNetty.Handlers.Timeout;
+using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
+using JT809.DotNetty.Core.Clients;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
@@ -11,10 +13,10 @@ namespace JT809.DotNetty.Core.Handlers
     /// </summary>
     internal class JT809SubordinateServerConnectionHandler: ChannelHandlerAdapter
     {
-
         private readonly ILogger<JT809SubordinateServerConnectionHandler> logger;
 
         public JT809SubordinateServerConnectionHandler(
+            JT809SubordinateClient subordinateClient,
             ILoggerFactory loggerFactory)
         {
             logger = loggerFactory.CreateLogger<JT809SubordinateServerConnectionHandler>();
