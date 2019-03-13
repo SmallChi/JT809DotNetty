@@ -114,6 +114,7 @@ namespace JT809.DotNetty.Core
             serviceDescriptors.TryAddScoped<JT809MainServerHandler>();
             serviceDescriptors.TryAddScoped<JT809SubordinateClientHandler>();
             serviceDescriptors.TryAddSingleton<IJT809SubordinateLoginService, JT809SubordinateLoginImplService>();
+            serviceDescriptors.TryAddSingleton<IJT809SubordinateLinkNotifyService, JT809SubordinateLinkNotifyImplService>();
             //从链路客户端
             serviceDescriptors.TryAddSingleton<JT809SubordinateClient>();
             //主链路服务端

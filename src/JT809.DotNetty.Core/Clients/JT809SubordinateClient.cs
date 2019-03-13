@@ -82,7 +82,8 @@ namespace JT809.DotNetty.Core.Clients
         public async void ConnectAsync(string ip,int port,int delay=3000)
         {
             var verifyCode = verifyCodeGenerator.Get();
-            logger.LogInformation($"ip:{ip},port:{port},verifycode:{verifyCode}");
+            if (logger.IsEnabled(LogLevel.Information))
+                logger.LogInformation($"ip:{ip},port:{port},verifycode:{verifyCode}");
             await Task.Delay(delay);
             try
             { 
@@ -94,7 +95,8 @@ namespace JT809.DotNetty.Core.Clients
                     {
                         VerifyCode = verifyCode
                     });
-                    logger.LogInformation($"从链路连接请求消息>>>{JT809Serializer.Serialize(package, 100).ToHexString()}");
+                    if (logger.IsEnabled(LogLevel.Information))
+                        logger.LogInformation($"从链路连接请求消息>>>{JT809Serializer.Serialize(package, 100).ToHexString()}");
                     JT809Response jT809Response = new JT809Response(package, 100);
                     SendAsync(jT809Response);
                 }
@@ -107,7 +109,8 @@ namespace JT809.DotNetty.Core.Clients
                     {
                         VerifyCode = verifyCode
                     });
-                    logger.LogInformation($"从链路连接请求消息>>>{JT809Serializer.Serialize(package, 100).ToHexString()}");
+                    if (logger.IsEnabled(LogLevel.Information))
+                        logger.LogInformation($"从链路连接请求消息>>>{JT809Serializer.Serialize(package, 100).ToHexString()}");
                     JT809Response jT809Response = new JT809Response(package, 100);
                     SendAsync(jT809Response);
                 }
@@ -129,14 +132,16 @@ namespace JT809.DotNetty.Core.Clients
             var verifyCode = verifyCodeGenerator.Get();
             try
             {
-                logger.LogInformation($"IPAddress:{ipEndPoint.ToString()},verifycode:{verifyCode}");
+                if (logger.IsEnabled(LogLevel.Information))
+                    logger.LogInformation($"IPAddress:{ipEndPoint.ToString()},verifycode:{verifyCode}");
                 channel = await bootstrap.ConnectAsync(ipEndPoint);
                 //从链路连接请求消息
                 var package = JT809BusinessType.从链路连接请求消息.Create(new JT809_0x9001()
                 {
                     VerifyCode = verifyCode
                 });
-                logger.LogInformation($"从链路连接请求消息>>>{JT809Serializer.Serialize(package, 100).ToHexString()}");
+                if (logger.IsEnabled(LogLevel.Information))
+                    logger.LogInformation($"从链路连接请求消息>>>{JT809Serializer.Serialize(package, 100).ToHexString()}");
                 JT809Response jT809Response = new JT809Response(package, 100);
                 SendAsync(jT809Response);
                 return channel.Open;
@@ -188,8 +193,9 @@ namespace JT809.DotNetty.Core.Clients
                         VerifyCode = verifyCodeGenerator.Get()
                     });
                     JT809Response jT809Response = new JT809Response(package, 100);
+                    if (logger.IsEnabled(LogLevel.Information))
+                        logger.LogInformation($"发送从链路注销请求>>>{JT809Serializer.Serialize(package, 100).ToHexString()}");
                     SendAsync(jT809Response);
-                    logger.LogInformation($"发送从链路注销请求>>>{JT809Serializer.Serialize(package, 100).ToHexString()}");
                 }
                 catch (Exception ex)
                 {

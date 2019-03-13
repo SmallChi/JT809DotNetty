@@ -49,7 +49,8 @@ namespace JT809.DotNetty.Core.Internal
                         ReasonCode = reasonCode
                     });
                     JT809Response jT809Response = new JT809Response(package, 100);
-                    logger.LogInformation($"从链路断开通知消息>>>{JT809Serializer.Serialize(package, 100).ToHexString()}");
+                    if(logger.IsEnabled(LogLevel.Information))
+                        logger.LogInformation($"从链路断开通知消息>>>{JT809Serializer.Serialize(package, 100).ToHexString()}");
                     session.Channel.WriteAndFlushAsync(jT809Response);
                 }
             }

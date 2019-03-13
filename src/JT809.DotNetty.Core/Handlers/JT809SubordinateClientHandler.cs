@@ -59,20 +59,15 @@ namespace JT809.DotNetty.Core.Handlers
             catch (JT809Exception ex)
             {
                 jT809AtomicCounterService.MsgFailIncrement();
-                if (logger.IsEnabled(LogLevel.Error))
-                {
                     logger.LogError("accept package fail count<<<" + jT809AtomicCounterService.MsgFailCount.ToString());
                     logger.LogError(ex, "accept msg<<<" + ByteBufferUtil.HexDump(msg));
-                }
+                
             }
             catch (Exception ex)
             {
                 jT809AtomicCounterService.MsgFailIncrement();
-                if (logger.IsEnabled(LogLevel.Error))
-                {
-                    logger.LogError("accept package fail count<<<" + jT809AtomicCounterService.MsgFailCount.ToString());
-                    logger.LogError(ex, "accept msg<<<" + ByteBufferUtil.HexDump(msg));
-                }
+                logger.LogError("accept package fail count<<<" + jT809AtomicCounterService.MsgFailCount.ToString());
+                logger.LogError(ex, "accept msg<<<" + ByteBufferUtil.HexDump(msg));
             }
         }
     }

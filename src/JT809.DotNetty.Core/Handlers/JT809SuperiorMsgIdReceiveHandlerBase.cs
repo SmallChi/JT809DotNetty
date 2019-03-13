@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using JT809.DotNetty.Core.Configurations;
 using JT809.DotNetty.Core.Interfaces;
-using JT809.DotNetty.Core.Clients;
 using JT809.DotNetty.Core.Metadata;
 using JT809.Protocol.Enums;
 using JT809.Protocol.Extensions;
 using JT809.Protocol.MessageBody;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using JT809.Protocol;
 
 namespace JT809.DotNetty.Core.Handlers
 {
@@ -46,12 +44,10 @@ namespace JT809.DotNetty.Core.Handlers
                 {JT809BusinessType.从链路连接应答消息, Msg0x9002},
                 {JT809BusinessType.从链路注销应答消息, Msg0x9004},
                 {JT809BusinessType.从链路连接保持应答消息, Msg0x9006},
-
-
             };
             SubHandlerDict = new Dictionary<JT809SubBusinessType, Func<JT809Request, JT809Response>>
             {
-                //{JT809SubBusinessType.实时上传车辆定位信息, Msg0x1200_0x1202},
+                {JT809SubBusinessType.实时上传车辆定位信息, Msg0x1200_0x1202},
             };
         }
 
@@ -160,7 +156,6 @@ namespace JT809.DotNetty.Core.Handlers
             return null;
         }
 
-
         /// <summary>
         /// 主链路动态信息交换消息
         /// </summary>
@@ -168,8 +163,24 @@ namespace JT809.DotNetty.Core.Handlers
         /// <returns></returns>
         public virtual JT809Response Msg0x1200(JT809Request request)
         {
-
+            var exchangeMessageBodies = request.Package.Bodies as JT809ExchangeMessageBodies;
+            if (Logger.IsEnabled(LogLevel.Debug))
+                Logger.LogDebug(JsonConvert.SerializeObject(request.Package));
+            if (SubHandlerDict.TryGetValue(exchangeMessageBodies.SubBusinessType,out var func))
+            {
+                return func(request);
+            }
             return null;
+        }
+
+        /// <summary>
+        /// 实时上传车辆定位信息
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>本条消息无需被通知方应答</returns>
+        public virtual JT809Response Msg0x1200_0x1202(JT809Request request)
+        {
+            throw new NotImplementedException("实时上传车辆定位信息");
         }
     }
 }

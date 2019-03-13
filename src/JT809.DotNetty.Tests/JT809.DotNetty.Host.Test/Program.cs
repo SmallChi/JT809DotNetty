@@ -17,7 +17,7 @@ namespace JT809.DotNetty.Host.Test
             JT809.Protocol.JT809GlobalConfig.Instance
                 .SetHeaderOptions(new JT809HeaderOptions
                 {
-                    MsgGNSSCENTERID = 20190222,
+                    MsgGNSSCENTERID = 20141013,
                     Version = new JT809.Protocol.JT809Header_Version(1, 0, 0),
                     EncryptKey = 9595
                 });

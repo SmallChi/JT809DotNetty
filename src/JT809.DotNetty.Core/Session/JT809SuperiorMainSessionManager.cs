@@ -72,7 +72,8 @@ namespace JT809.DotNetty.Core.Session
             }
             if (SessionIdDict.TryRemove(msgGNSSCENTERID, out JT809Session jT808SessionRemove))
             {
-                logger.LogInformation($">>>{msgGNSSCENTERID} Session Remove.");
+                if(logger.IsEnabled( LogLevel.Information))
+                    logger.LogInformation($">>>{msgGNSSCENTERID} Session Remove.");
                 //jT809SessionPublishing.PublishAsync(JT809Constants.SessionOffline, msgGNSSCENTERID.ToString());
                 return jT808SessionRemove;
             }
@@ -92,7 +93,8 @@ namespace JT809.DotNetty.Core.Session
                     SessionIdDict.TryRemove(key, out JT809Session jT808SessionRemove);
                 }
                 string nos = string.Join(",", keys);
-                logger.LogInformation($">>>{nos} Channel Remove.");
+                if (logger.IsEnabled(LogLevel.Information))
+                    logger.LogInformation($">>>{nos} Channel Remove.");
                 //jT809SessionPublishing.PublishAsync(JT809Constants.SessionOffline, nos);
             }      
         }

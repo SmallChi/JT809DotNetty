@@ -7,6 +7,7 @@ using JT809.Protocol.Exceptions;
 using JT809.DotNetty.Core.Services;
 using JT809.DotNetty.Core.Metadata;
 using JT809.DotNetty.Core.Enums;
+using JT809.DotNetty.Core.Session;
 
 namespace JT809.DotNetty.Core.Handlers
 {
@@ -20,16 +21,21 @@ namespace JT809.DotNetty.Core.Handlers
         
         private readonly JT809AtomicCounterService jT809AtomicCounterService;
 
+        private readonly JT809SuperiorMainSessionManager SuperiorMainSessionManager;
+
         private readonly ILogger<JT809MainServerHandler> logger;
 
         public JT809MainServerHandler(
             ILoggerFactory loggerFactory,
             JT809SuperiorMsgIdReceiveHandlerBase handler,
+            JT809SuperiorMainSessionManager superiorMainSessionManager,
             JT809AtomicCounterServiceFactory jT809AtomicCounterServiceFactorty
+
             )
         {
             this.handler = handler;
             this.jT809AtomicCounterService = jT809AtomicCounterServiceFactorty.Create(JT809AtomicCounterType.ServerMain.ToString()); ;
+            this.SuperiorMainSessionManager = superiorMainSessionManager;
             logger = loggerFactory.CreateLogger<JT809MainServerHandler>();
         }
 
@@ -44,6 +50,7 @@ namespace JT809.DotNetty.Core.Handlers
                 {
                     logger.LogDebug("accept package success count<<<" + jT809AtomicCounterService.MsgSuccessCount.ToString());
                 }
+                SuperiorMainSessionManager.TryAdd(ctx.Channel, jT809Package.Header.MsgGNSSCENTERID);
                 Func<JT809Request, JT809Response> handlerFunc;
                 if (handler.HandlerDict.TryGetValue(jT809Package.Header.BusinessType, out handlerFunc))
                 {
