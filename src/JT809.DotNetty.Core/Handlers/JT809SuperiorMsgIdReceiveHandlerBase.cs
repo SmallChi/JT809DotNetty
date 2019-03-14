@@ -47,7 +47,10 @@ namespace JT809.DotNetty.Core.Handlers
             };
             SubHandlerDict = new Dictionary<JT809SubBusinessType, Func<JT809Request, JT809Response>>
             {
+                {JT809SubBusinessType.上传车辆注册信息, Msg0x1200_0x1201},
+                {JT809SubBusinessType.主动上报驾驶员身份信息, Msg0x1200_0x120C},
                 {JT809SubBusinessType.实时上传车辆定位信息, Msg0x1200_0x1202},
+                {JT809SubBusinessType.车辆定位信息自动补报, Msg0x1200_0x1203},
             };
         }
 
@@ -107,7 +110,7 @@ namespace JT809.DotNetty.Core.Handlers
         {
             var jT809_0x1007 = request.Package.Bodies as JT809_0x1007;
             Logger.LogInformation($"主链路断开通知消息:{jT809_0x1007.ErrorCode.ToString()}-{jT809_0x1007.ErrorCode}");
-            return null;
+            return default;
         }
 
         /// <summary>
@@ -119,7 +122,7 @@ namespace JT809.DotNetty.Core.Handlers
         {
             var jT809_0x1008 = request.Package.Bodies as JT809_0x1008;
             Logger.LogInformation($"下级平台主动关闭链路通知消息:{jT809_0x1008.ReasonCode.ToString()}-{jT809_0x1008.ReasonCode}");
-            return null;
+            return default;
         }
 
         /// <summary>
@@ -131,7 +134,7 @@ namespace JT809.DotNetty.Core.Handlers
         {
             var jT809_0x9002 = request.Package.Bodies as JT809_0x9002;
             Logger.LogInformation($"从链路连接应答消息:{jT809_0x9002.Result.ToString()}-{jT809_0x9002.Result}");
-            return null;
+            return default;
         }
 
         /// <summary>
@@ -141,8 +144,8 @@ namespace JT809.DotNetty.Core.Handlers
         /// <returns>本条消息无需被通知方应答</returns>
         public virtual JT809Response Msg0x9004(JT809Request request)
         {
-            Logger.LogInformation("从链路注销应答消息");
-            return null;
+            Logger.LogInformation($"从链路注销应答消息:{request.OriginalPackage.ToHexString()}");
+            return default;
         }
 
         /// <summary>
@@ -152,8 +155,8 @@ namespace JT809.DotNetty.Core.Handlers
         /// <returns>本条消息无需被通知方应答</returns>
         public virtual JT809Response Msg0x9006(JT809Request request)
         {
-            Logger.LogInformation("从链路连接保持应答消息");
-            return null;
+            Logger.LogInformation($"从链路连接保持应答消息:{request.OriginalPackage.ToHexString()}");
+            return default;
         }
 
         /// <summary>
@@ -170,7 +173,19 @@ namespace JT809.DotNetty.Core.Handlers
             {
                 return func(request);
             }
-            return null;
+            return default;
+        }
+
+        /// <summary>
+        /// 上传车辆注册信息消息
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>本条消息无需被通知方应答</returns>
+        public virtual JT809Response Msg0x1200_0x1201(JT809Request request)
+        {
+            if (Logger.IsEnabled(LogLevel.Debug))
+                Logger.LogDebug($"上传车辆注册信息消息:{request.OriginalPackage.ToHexString()}");
+            return default;
         }
 
         /// <summary>
@@ -180,7 +195,33 @@ namespace JT809.DotNetty.Core.Handlers
         /// <returns>本条消息无需被通知方应答</returns>
         public virtual JT809Response Msg0x1200_0x1202(JT809Request request)
         {
-            throw new NotImplementedException("实时上传车辆定位信息");
+            if (Logger.IsEnabled(LogLevel.Debug))
+                Logger.LogDebug($"实时上传车辆定位信息:{request.OriginalPackage.ToHexString()}");
+            return default;
+        }
+
+        /// <summary>
+        /// 车辆定位信息自动补报
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>本条消息无需被通知方应答</returns>
+        public virtual JT809Response Msg0x1200_0x1203(JT809Request request)
+        {
+            if (Logger.IsEnabled(LogLevel.Debug))
+                Logger.LogDebug($"车辆定位信息自动补报:{request.OriginalPackage.ToHexString()}");
+            return default;
+        }
+
+        /// <summary>
+        /// 主动上报驾驶员身份信息
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns>本条消息无需被通知方应答</returns>
+        public virtual JT809Response Msg0x1200_0x120C(JT809Request request)
+        {
+            if (Logger.IsEnabled(LogLevel.Debug))
+                Logger.LogDebug($"主动上报驾驶员身份信息:{request.OriginalPackage.ToHexString()}");
+            return default;
         }
     }
 }
