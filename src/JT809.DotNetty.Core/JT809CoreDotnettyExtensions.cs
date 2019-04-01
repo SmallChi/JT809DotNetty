@@ -125,5 +125,39 @@ namespace JT809.DotNetty.Core
             serviceDescriptors.AddHostedService<JT809MainWebAPIServerHost>();
             return serviceDescriptors;
         }
+
+        /// <summary>
+        /// 上级平台
+        /// 主链路为服务端
+        /// 从链路为客户端
+        /// </summary>
+        /// <param name="serviceDescriptors"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddJT809SuperiorPlatform(this IServiceCollection serviceDescriptors, IConfiguration superiorPlatformConfiguration)
+        {
+            serviceDescriptors.Configure<JT809SuperiorPlatformOptions>(superiorPlatformConfiguration.GetSection("JT809SuperiorPlatformConfiguration"));
+            serviceDescriptors.TryAddSingleton<IJT809VerifyCodeGenerator, JT809VerifyCodeGeneratorDefaultImpl>();
+            //主从链路客户端和服务端连接处理器
+            serviceDescriptors.TryAddScoped<JT809MainServerConnectionHandler>();
+            serviceDescriptors.TryAddScoped<JT809SubordinateClientConnectionHandler>();
+            //主链路服务端会话管理
+            serviceDescriptors.TryAddSingleton<JT809SuperiorMainSessionManager>();
+            //主从链路接收消息默认业务处理器
+            serviceDescriptors.TryAddSingleton<JT809SuperiorMsgIdReceiveHandlerBase, JT809SuperiorMsgIdReceiveDefaultHandler>();
+            //主从链路消息接收处理器
+            serviceDescriptors.TryAddScoped<JT809MainServerHandler>();
+            serviceDescriptors.TryAddScoped<JT809SubordinateClientHandler>();
+            serviceDescriptors.TryAddSingleton<IJT809SubordinateLoginService, JT809SubordinateLoginImplService>();
+            serviceDescriptors.TryAddSingleton<IJT809SubordinateLinkNotifyService, JT809SubordinateLinkNotifyImplService>();
+            //从链路客户端
+            serviceDescriptors.TryAddSingleton<JT809SubordinateClient>();
+            //主链路服务端
+            serviceDescriptors.AddHostedService<JT809MainServerHost>();
+            //上级平台webapi
+            serviceDescriptors.TryAddSingleton<JT809SuperiorWebAPIHandlerBase, JT809SuperiorWebAPIDefaultHandler>();
+            serviceDescriptors.TryAddScoped<JT809SuperiorWebAPIServerHandler>();
+            serviceDescriptors.AddHostedService<JT809MainWebAPIServerHost>();
+            return serviceDescriptors;
+        }
     }
 }

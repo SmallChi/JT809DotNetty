@@ -5,17 +5,15 @@ VisualStudioVersion = 15.0.28010.2016
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809.DotNetty.Core", "JT809.DotNetty.Core\JT809.DotNetty.Core.csproj", "{0291C1D6-B4C6-4E7E-984B-0BAFB238727D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C712B2DE-34FE-4D9C-B574-A08B019246E4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809.Protocol", "JT809.Protocol\src\JT809.Protocol\JT809.Protocol.csproj", "{321EE8EE-10D7-4233-8B8A-279BE68FB18A}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809.DotNetty.Abstractions", "JT809.DotNetty.Abstractions\JT809.DotNetty.Abstractions.csproj", "{EB8276CC-1848-4E7D-B77E-29B22AF767F0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{DD4611CF-79A9-45C7-91EB-1E84D22B7D07}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809.DotNetty.Host.Test", "JT809.DotNetty.Tests\JT809.DotNetty.Host.Test\JT809.DotNetty.Host.Test.csproj", "{D4E18559-C429-416F-9399-42C0E604D27B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809.Protocol.Extensions.DependencyInjection", "JT809.Protocol\src\JT809.Protocol.Extensions.DependencyInjection\JT809.Protocol.Extensions.DependencyInjection.csproj", "{975D959C-7C0B-418E-838E-EB383E912F8C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9EFC0937-8515-4EFB-8FE7-558C6FC8860C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809.Protocol", "JT809.Protocol\src\JT809.Protocol\JT809.Protocol.csproj", "{3D7271A3-02CF-4DF4-AD3C-1BF248D6D7CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,10 +25,6 @@ Global
 		{0291C1D6-B4C6-4E7E-984B-0BAFB238727D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0291C1D6-B4C6-4E7E-984B-0BAFB238727D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0291C1D6-B4C6-4E7E-984B-0BAFB238727D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{321EE8EE-10D7-4233-8B8A-279BE68FB18A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{321EE8EE-10D7-4233-8B8A-279BE68FB18A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{321EE8EE-10D7-4233-8B8A-279BE68FB18A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{321EE8EE-10D7-4233-8B8A-279BE68FB18A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EB8276CC-1848-4E7D-B77E-29B22AF767F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EB8276CC-1848-4E7D-B77E-29B22AF767F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB8276CC-1848-4E7D-B77E-29B22AF767F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,18 +33,17 @@ Global
 		{D4E18559-C429-416F-9399-42C0E604D27B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4E18559-C429-416F-9399-42C0E604D27B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4E18559-C429-416F-9399-42C0E604D27B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{975D959C-7C0B-418E-838E-EB383E912F8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{975D959C-7C0B-418E-838E-EB383E912F8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{975D959C-7C0B-418E-838E-EB383E912F8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{975D959C-7C0B-418E-838E-EB383E912F8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D7271A3-02CF-4DF4-AD3C-1BF248D6D7CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D7271A3-02CF-4DF4-AD3C-1BF248D6D7CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D7271A3-02CF-4DF4-AD3C-1BF248D6D7CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D7271A3-02CF-4DF4-AD3C-1BF248D6D7CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{321EE8EE-10D7-4233-8B8A-279BE68FB18A} = {C712B2DE-34FE-4D9C-B574-A08B019246E4}
 		{D4E18559-C429-416F-9399-42C0E604D27B} = {DD4611CF-79A9-45C7-91EB-1E84D22B7D07}
-		{975D959C-7C0B-418E-838E-EB383E912F8C} = {C712B2DE-34FE-4D9C-B574-A08B019246E4}
+		{3D7271A3-02CF-4DF4-AD3C-1BF248D6D7CA} = {9EFC0937-8515-4EFB-8FE7-558C6FC8860C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0FC2A52E-3B7A-4485-9C3B-9080C825419D}
