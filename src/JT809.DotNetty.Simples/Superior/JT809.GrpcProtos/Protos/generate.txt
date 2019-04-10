@@ -1,0 +1,1 @@
+C:\Users\Administrator\.nuget\packages\grpc.tools\1.14.2\tools\windows_x64\protoc.exe -I JT809.GrpcProtos --csharp_out JT809.GrpcProtos JT809.GrpcProtos\Protos\JT809GpsPosition.proto --grpc_out JT809.GrpcProtos --plugin=protoc-gen-grpc=C:\Users\Administrator\.nuget\packages\grpc.tools\1.14.2\tools\windows_x64\grpc_csharp_plugin.exe;
