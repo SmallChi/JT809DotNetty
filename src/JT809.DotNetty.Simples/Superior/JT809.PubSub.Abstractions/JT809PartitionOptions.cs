@@ -10,5 +10,7 @@ namespace JT809.PubSub.Abstractions
         public int Partition { get; set; } = 1;
 
         public JT809PartitionOptions Value => this;
+
+        public List<int> AssignPartitions { get; set; }
     }
 }

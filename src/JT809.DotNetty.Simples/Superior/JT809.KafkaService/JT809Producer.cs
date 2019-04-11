@@ -7,6 +7,10 @@ using System.Collections.Generic;
 
 namespace JT809.KafkaService
 {
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class JT809Producer<T> : IJT809ProducerOfT<T>
     {
         private bool _disposed = false;
@@ -17,15 +21,20 @@ namespace JT809.KafkaService
 
         private IProducer<string, T> producer;
 
+        protected virtual Serializer<T> Serializer { get; }
+
         protected virtual IJT809ProducerPartitionFactory ProducerPartitionFactory { get; }
 
         protected virtual JT809PartitionOptions PartitionOptions { get; }
 
-        protected abstract ProducerConfig ProducerConfig { get; }
-
-        protected JT809Producer()
+        protected JT809Producer(ProducerConfig producerConfig)
         {
-            CreateProducer();
+            ProducerBuilder<string, T> producerBuilder= new ProducerBuilder<string, T>(producerConfig);
+            if (Serializer != null)
+            {
+                producerBuilder.SetValueSerializer(Serializer);
+            }
+            producer = producerBuilder.Build();
             if (PartitionOptions != null)
             {
                 TopicPartitionCache = new ConcurrentDictionary<string, TopicPartition>();
@@ -73,8 +82,6 @@ namespace JT809.KafkaService
                 }
             }
         }
-
-        protected abstract IProducer<string, T> CreateProducer();
 
         public void Dispose()
         {
