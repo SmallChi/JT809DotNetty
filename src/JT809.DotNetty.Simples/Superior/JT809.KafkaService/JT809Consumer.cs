@@ -1,6 +1,7 @@
 ﻿using Confluent.Kafka;
 using JT809.PubSub.Abstractions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -8,137 +9,81 @@ using System.Threading.Tasks;
 
 namespace JT809.KafkaService
 {
-    public abstract class JT809Consumer<T> : IJT808ConsumerOfT<T>
+    public abstract class JT809Consumer<T> : JT809ConsumerBase<T>
     {
         private bool _disposed = false;
-        public CancellationTokenSource Cts => new CancellationTokenSource();
+        public override CancellationTokenSource Cts => new CancellationTokenSource();
 
-        public virtual string TopicName => JT809Constants.JT809TopicName;
+        protected ILogger logger { get; }
 
-        private readonly ILogger logger;
-
-        private List<TopicPartition> topicPartitionList;
-
-        private IList<IConsumer<string, T>> consumers;
-
-        protected abstract JT809PartitionOptions PartitionOptions { get; }
-
-        protected virtual Deserializer<T> Deserializer { get; }
+        protected override IList<IConsumer<string, T>> Consumers { get; }
 
         protected JT809Consumer(
-            ConsumerConfig consumerConfig,
-            ILoggerFactory loggerFactory)
+            IOptions<JT809TopicOptions> topicOptionsAccessor, 
+            IOptions<ConsumerConfig> consumerConfigAccessor,
+            ILoggerFactory loggerFactory) 
+            : base(topicOptionsAccessor.Value.TopicName, consumerConfigAccessor.Value)
         {
             logger = loggerFactory.CreateLogger("JT809Consumer");
-            CreateTopicPartition();
-            consumers = new List<IConsumer<string, T>>();
-            foreach(var topicPartition in topicPartitionList)
+            Consumers = new List<IConsumer<string, T>>();
+            ConsumerBuilder<string, T> consumerBuilder = new ConsumerBuilder<string, T>(ConsumerConfig);
+            consumerBuilder.SetErrorHandler((consumer, error) =>
             {
-                ConsumerBuilder<string, T> consumerBuilder = new ConsumerBuilder<string, T>(consumerConfig);
-                consumerBuilder.SetErrorHandler((consumer, error) =>
-                {
-                    logger.LogError(error.Reason);
-                });
-                if (Deserializer != null)
-                {
-                    consumerBuilder.SetValueDeserializer(Deserializer);
-                }
-                if (PartitionOptions.Partition > 1)
-                {
-                    consumerBuilder.SetPartitionsAssignedHandler((c, p) => {
-                        p.Add(topicPartition);
-                    });
-                }
-                consumers.Add(consumerBuilder.Build());
+                logger.LogError(error.Reason);
+            });
+            if (Deserializer != null)
+            {
+                consumerBuilder.SetValueDeserializer(Deserializer);
             }
+            Consumers.Add(consumerBuilder.Build());
         }
 
-        private void CreateTopicPartition()
+        public override void OnMessage(Action<(string MsgId, T Data)> callback)
         {
-            topicPartitionList = new List<TopicPartition>();
-            if (PartitionOptions.Partition > 1)
+            Task.Run(() =>
             {
-                if(PartitionOptions.AssignPartitions!=null && PartitionOptions.AssignPartitions.Count>0)
+                while (!Cts.IsCancellationRequested)
                 {
-                    foreach(var p in PartitionOptions.AssignPartitions)
+                    try
                     {
-                        topicPartitionList.Add(new TopicPartition(TopicName, new Partition(p)));
-                    }                   
-                }
-                else
-                {
-                    for (int i = 0; i < PartitionOptions.Partition; i++)
+                        //如果不指定分区，根据kafka的机制会从多个分区中拉取数据
+                        //如果指定分区，根据kafka的机制会从相应的分区中拉取数据
+                        //consumers[n].Assign(topicPartitionList[n]);
+                        var data = Consumers[0].Consume(Cts.Token);
+                        if (logger.IsEnabled(LogLevel.Debug))
+                        {
+                            logger.LogDebug($"Topic: {data.Topic} Key: {data.Key} Partition: {data.Partition} Offset: {data.Offset} Data:{string.Join("", data.Value)} TopicPartitionOffset:{data.TopicPartitionOffset}");
+                        }
+                        callback((data.Key, data.Value));
+                    }
+                    catch (ConsumeException ex)
                     {
-                        topicPartitionList.Add(new TopicPartition(TopicName, new Partition(i)));
+                        logger.LogError(ex, TopicName);
+                        Thread.Sleep(1000);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, TopicName);
+                        Thread.Sleep(1000);
                     }
                 }
-            }
-            else
-            {
-                for (int i = 0; i < PartitionOptions.Partition; i++)
-                {
-                    topicPartitionList.Add(new TopicPartition(TopicName, new Partition(i)));
-                }
-            }
+            }, Cts.Token);            
         }
 
-        public void OnMessage(Action<(string MsgId, T data)> callback)
-        {
-            logger.LogDebug($"consumers:{consumers.Count},topicPartitionList:{topicPartitionList.Count}");
-            for (int i = 0; i < consumers.Count; i++)
-            {
-                Task.Factory.StartNew((num) =>
-                {
-                    int n = (int)num;
-                    while (!Cts.IsCancellationRequested)
-                    {
-                        try
-                        {
-                            //如果不指定分区，根据kafka的机制会从多个分区中拉取数据
-                            //如果指定分区，根据kafka的机制会从相应的分区中拉取数据
-                            //consumers[n].Assign(topicPartitionList[n]);
-                            var data = consumers[n].Consume(Cts.Token);
-                            if (logger.IsEnabled(LogLevel.Debug))
-                            {
-                                logger.LogDebug($"Topic: {data.Topic} Key: {data.Key} Partition: {data.Partition} Offset: {data.Offset} Data:{string.Join("", data.Value)} TopicPartitionOffset:{data.TopicPartitionOffset}");
-                            }
-                            callback((data.Key, data.Value));
-                        }
-                        catch (ConsumeException ex)
-                        {
-                            logger.LogError(ex, TopicName);
-                            Thread.Sleep(1000);
-                        }
-                        catch (Exception ex)
-                        {
-                            logger.LogError(ex, TopicName);
-                            Thread.Sleep(1000);
-                        }
-                    }
-                }, i, Cts.Token);
-            }
-        }
-
-        public void Subscribe()
+        public override void Subscribe()
         {
             if (_disposed) return;
             //仅有一个分区才需要订阅
-            if (topicPartitionList.Count == 1)
-            {
-                consumers[0].Subscribe(TopicName);
-            }
+            Consumers[0].Subscribe(TopicName);
         }
 
-        public void Unsubscribe()
+        public override void Unsubscribe()
         {
             if (_disposed) return;
-            foreach(var c in consumers)
-            {
-                c.Unsubscribe();
-            }
+            Consumers[0].Unsubscribe(); 
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(true);
@@ -156,11 +101,8 @@ namespace JT809.KafkaService
             if (disposing)
             {
                 Cts.Cancel();
-                foreach (var c in consumers)
-                {
-                    c.Close();
-                    c.Dispose();
-                }
+                Consumers[0].Close();
+                Consumers[0].Dispose();
                 Cts.Dispose();
             }
             _disposed = true;

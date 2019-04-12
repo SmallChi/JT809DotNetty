@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809.GrpcProtos", "JT809.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JT809.KafkaService", "JT809.DotNetty.Simples\Superior\JT809.KafkaService\JT809.KafkaService.csproj", "{8119D905-241F-4EFF-B300-1FB474B8C665}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JT809.KafkaServiceTest", "JT809.DotNetty.Simples\Superior\JT809.KafkaServiceTest\JT809.KafkaServiceTest.csproj", "{22F008D5-61F8-4889-80DB-91B37591322F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{8119D905-241F-4EFF-B300-1FB474B8C665}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8119D905-241F-4EFF-B300-1FB474B8C665}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8119D905-241F-4EFF-B300-1FB474B8C665}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22F008D5-61F8-4889-80DB-91B37591322F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22F008D5-61F8-4889-80DB-91B37591322F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22F008D5-61F8-4889-80DB-91B37591322F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22F008D5-61F8-4889-80DB-91B37591322F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -70,6 +76,7 @@ Global
 		{5F8AFD67-FDA8-40A6-A655-FD855E2CCF26} = {E9DC871D-EFCE-4D53-A5B5-8A88D2D52EA4}
 		{D64F2F77-DC0C-4120-80DA-45012A794CDF} = {E9DC871D-EFCE-4D53-A5B5-8A88D2D52EA4}
 		{8119D905-241F-4EFF-B300-1FB474B8C665} = {E9DC871D-EFCE-4D53-A5B5-8A88D2D52EA4}
+		{22F008D5-61F8-4889-80DB-91B37591322F} = {E9DC871D-EFCE-4D53-A5B5-8A88D2D52EA4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0FC2A52E-3B7A-4485-9C3B-9080C825419D}

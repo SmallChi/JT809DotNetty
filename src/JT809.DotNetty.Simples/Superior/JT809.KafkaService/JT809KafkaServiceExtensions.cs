@@ -18,7 +18,7 @@ namespace JT809.KafkaService
     {
         public static IServiceCollection AddJT809KafkaProducerService(this IServiceCollection serviceDescriptors, IConfiguration configuration)
         {
-            serviceDescriptors.Configure<ProducerConfig>(configuration.GetSection("JT809ProducerConfig"));
+            serviceDescriptors.Configure<ProducerConfig>(configuration.GetSection("KafkaProducerConfig"));
             serviceDescriptors.AddSingleton(typeof(JT809Producer<byte[]>), typeof(JT809_Same_Producer));
             serviceDescriptors.AddSingleton(typeof(JT809Producer<JT809GpsPosition>), typeof(JT809_GpsPositio_Producer));
             return serviceDescriptors;
@@ -42,7 +42,7 @@ namespace JT809.KafkaService
 
         public static IServiceCollection AddJT809KafkaConsumerService(this IServiceCollection serviceDescriptors, IConfiguration configuration, Action<JT809PartitionOptions> action = null)
         {
-            serviceDescriptors.Configure<ConsumerConfig>(configuration.GetSection("JT809ConsumerConfig"));
+            serviceDescriptors.Configure<ConsumerConfig>(configuration.GetSection("KafkaConsumerConfig"));
             if (configuration.GetSection("JT809PartitionOptions").Exists())
             {
                 serviceDescriptors.Configure<JT809PartitionOptions>(configuration.GetSection("JT809PartitionOptions"));
