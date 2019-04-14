@@ -48,10 +48,6 @@ namespace JT809.KafkaService
                 {
                     consumerBuilder.SetValueDeserializer(Deserializer);
                 }
-                consumerBuilder.SetPartitionsAssignedHandler((c, p) =>
-                {
-                    p.Add(topicPartition);
-                });
                 consumers.Add(consumerBuilder.Build());
             }
             return consumers;
@@ -92,7 +88,7 @@ namespace JT809.KafkaService
                         {
                             //如果不指定分区，根据kafka的机制会从多个分区中拉取数据
                             //如果指定分区，根据kafka的机制会从相应的分区中拉取数据
-                            //consumers[n].Assign(topicPartitionList[n]);
+                            Consumers[n].Assign(topicPartitionList[n]);
                             var data = Consumers[n].Consume(Cts.Token);
                             if (logger.IsEnabled(LogLevel.Debug))
                             {

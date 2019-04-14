@@ -12,15 +12,15 @@ namespace JT809.KafkaServiceTest
         [Fact]
         public void Test1()
         {
-            ConsumerTestService producerTestService = ServiceProvider.GetRequiredService<ConsumerTestService>();
-            producerTestService.GpsConsumer.OnMessage((Message)=> 
+            ConsumerTestService consumerTestService = ServiceProvider.GetRequiredService<ConsumerTestService>();
+            consumerTestService.GpsConsumer.OnMessage((Message)=> 
             {
                 Assert.Equal(JT809SubBusinessType.实时上传车辆定位信息.ToValueString(), Message.MsgId);
                 Assert.Equal("粤A23456", Message.Data.Vno);
                 Assert.Equal(2, Message.Data.VColor);
                 Assert.Equal("smallchi", Message.Data.FromChannel);
             });
-            producerTestService.GpsConsumer.Subscribe();
+            consumerTestService.GpsConsumer.Subscribe();
 
             Thread.Sleep(100000);
         }
@@ -28,13 +28,13 @@ namespace JT809.KafkaServiceTest
         [Fact]
         public void Test2()
         {
-            ConsumerTestService producerTestService = ServiceProvider.GetRequiredService<ConsumerTestService>();
-            producerTestService.SameConsumer.OnMessage((Message) =>
+            ConsumerTestService consumerTestService = ServiceProvider.GetRequiredService<ConsumerTestService>();
+            consumerTestService.SameConsumer.OnMessage((Message) =>
             {
                 Assert.Equal(JT809SubBusinessType.None.ToValueString(), Message.MsgId);
                 Assert.Equal(new byte[] { 0x01, 0x02, 0x03 }, Message.Data);
             });
-            producerTestService.SameConsumer.Subscribe();
+            consumerTestService.SameConsumer.Subscribe();
 
             Thread.Sleep(100000);
         }

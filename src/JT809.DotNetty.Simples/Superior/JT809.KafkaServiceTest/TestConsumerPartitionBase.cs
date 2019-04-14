@@ -9,12 +9,12 @@ using Microsoft.Extensions.Logging;
 
 namespace JT809.KafkaServiceTest
 {
-    public class TestProducerPartitionBase
+    public class TestConsumerPartitionBase
     {
         public IServiceProvider ServiceProvider { get; }
 
         public IConfigurationRoot ConfigurationRoot { get; }
-        public TestProducerPartitionBase()
+        public TestConsumerPartitionBase()
         {
             var builder = new ConfigurationBuilder();
             builder.SetBasePath(AppDomain.CurrentDomain.BaseDirectory);
@@ -24,13 +24,13 @@ namespace JT809.KafkaServiceTest
             ServiceCollection serviceDescriptors = new ServiceCollection();
             serviceDescriptors.AddSingleton<ILoggerFactory, LoggerFactory>();
             serviceDescriptors.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
-            serviceDescriptors.AddLogging(configure => 
+            serviceDescriptors.AddLogging(configure =>
             {
                 configure.AddDebug();
                 configure.SetMinimumLevel(LogLevel.Trace);
             });
-            serviceDescriptors.AddJT809KafkaProducerPartitionsService(ConfigurationRoot,partition=> { partition.Partition = 4; });
-            serviceDescriptors.AddSingleton<ProducerTestPartitionService>();
+            serviceDescriptors.AddJT809KafkaConsumerPartitionsService(ConfigurationRoot,partition=> { partition.Partition = 4; });
+            serviceDescriptors.AddSingleton<ConsumerTestPartitionService>();
             ServiceProvider = serviceDescriptors.BuildServiceProvider();
         }
     }

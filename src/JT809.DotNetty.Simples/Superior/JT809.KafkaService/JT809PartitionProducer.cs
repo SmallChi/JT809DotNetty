@@ -31,6 +31,24 @@ namespace JT809.KafkaService
             {
                 producerBuilder.SetValueSerializer(Serializer);
             }
+            return  producerBuilder.Build();
+        }
+
+        protected JT809PartitionProducer(
+            IOptions<JT809TopicOptions> topicOptionAccessor,
+            IOptions<ProducerConfig> producerConfig,
+            IJT809ProducerPartitionFactory producerPartitionFactory,
+            IOptions<JT809PartitionOptions> partitionOptionsAccessor)
+           : base(topicOptionAccessor.Value.TopicName, producerConfig.Value)
+        {
+            PartitionOptions = partitionOptionsAccessor.Value;
+            ProducerPartitionFactory = producerPartitionFactory;
+            Producer = CreateProducer();
+            CreatePartition();
+        }
+
+        private void CreatePartition()
+        {
             if (PartitionOptions != null)
             {
                 TopicPartitionCache = new ConcurrentDictionary<string, TopicPartition>();
@@ -77,19 +95,6 @@ namespace JT809.KafkaService
                     }
                 }
             }
-            return  producerBuilder.Build();
-        }
-
-        protected JT809PartitionProducer(
-            IOptions<JT809TopicOptions> topicOptionAccessor,
-            ProducerConfig producerConfig,
-            IJT809ProducerPartitionFactory producerPartitionFactory,
-            IOptions<JT809PartitionOptions> partitionOptionsAccessor)
-           : base(topicOptionAccessor.Value.TopicName, producerConfig)
-        {
-            PartitionOptions = partitionOptionsAccessor.Value;
-            ProducerPartitionFactory = producerPartitionFactory;
-            Producer = CreateProducer();
         }
 
         public override void Dispose()
