@@ -40,7 +40,7 @@ namespace JT809.DotNetty.Core.Handlers
         }
 
 
-        protected override void ChannelRead0(IChannelHandlerContext ctx, byte[] msg)
+        protected override async void ChannelRead0(IChannelHandlerContext ctx, byte[] msg)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace JT809.DotNetty.Core.Handlers
                     if (jT808Response != null)
                     {
                         var sendData = JT809Serializer.Serialize(jT808Response.Package, jT808Response.MinBufferSize);
-                        ctx.WriteAndFlushAsync(Unpooled.WrappedBuffer(sendData));
+                        await ctx.WriteAndFlushAsync(Unpooled.WrappedBuffer(sendData));
                     }
                 }
             }

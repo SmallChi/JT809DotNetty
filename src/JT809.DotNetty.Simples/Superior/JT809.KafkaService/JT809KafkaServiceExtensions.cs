@@ -17,11 +17,11 @@ namespace JT809.KafkaService
         public static IServiceCollection AddJT809KafkaProducerService(this IServiceCollection serviceDescriptors, IConfiguration configuration)
         {
             serviceDescriptors.Configure<ProducerConfig>(configuration.GetSection("KafkaProducerConfig"));
-            serviceDescriptors.AddSingleton(typeof(JT809Producer<byte[]>), (service) => {
+            serviceDescriptors.AddSingleton(typeof(IJT809ProducerOfT<byte[]>), (service) => {
                 var producerConfig = service.GetRequiredService<IOptions<ProducerConfig>>();
                 return new JT809_Same_Producer(new JT809TopicOptions { TopicName = "jt809.same" }, producerConfig);
             });
-            serviceDescriptors.AddSingleton(typeof(JT809Producer<JT809GpsPosition>), (service) => {
+            serviceDescriptors.AddSingleton(typeof(IJT809ProducerOfT<JT809GpsPosition>), (service) => {
                 var producerConfig = service.GetRequiredService<IOptions<ProducerConfig>>();
                 return new JT809_GpsPositio_Producer(new JT809TopicOptions { TopicName = "jt809.gps" }, producerConfig);
             });
@@ -33,13 +33,13 @@ namespace JT809.KafkaService
             serviceDescriptors.Configure<ProducerConfig>(configuration.GetSection("KafkaProducerConfig"));
             serviceDescriptors.Configure(action);       
             serviceDescriptors.AddSingleton<IJT809ProducerPartitionFactory, JT809GpsPositionProducerPartitionFactoryImpl>();
-            serviceDescriptors.AddSingleton(typeof(JT809PartitionProducer<byte[]>), (service) => {
+            serviceDescriptors.AddSingleton(typeof(IJT809ProducerOfT<byte[]>), (service) => {
                 var producerConfig = service.GetRequiredService<IOptions<ProducerConfig>>();
                 var producerPartitionFactory = service.GetRequiredService<IJT809ProducerPartitionFactory>();
                 var partitionOptions = service.GetRequiredService<IOptions<JT809PartitionOptions>>();
                 return new JT809_Same_Partition_Producer(new JT809TopicOptions { TopicName = "jt809.partition.same" }, producerConfig, producerPartitionFactory, partitionOptions);
             });
-            serviceDescriptors.AddSingleton(typeof(JT809PartitionProducer<JT809GpsPosition>), (service) => {
+            serviceDescriptors.AddSingleton(typeof(IJT809ProducerOfT<JT809GpsPosition>), (service) => {
                 var producerConfig = service.GetRequiredService<IOptions<ProducerConfig>>();
                 var producerPartitionFactory = service.GetRequiredService<IJT809ProducerPartitionFactory>();
                 var partitionOptions = service.GetRequiredService<IOptions<JT809PartitionOptions>>();
@@ -51,13 +51,13 @@ namespace JT809.KafkaService
         public static IServiceCollection AddJT809KafkaConsumerService(this IServiceCollection serviceDescriptors, IConfiguration configuration)
         {
             serviceDescriptors.Configure<ConsumerConfig>(configuration.GetSection("KafkaConsumerConfig"));
-            serviceDescriptors.AddSingleton(typeof(JT809Consumer<byte[]>), (service)=> {
+            serviceDescriptors.AddSingleton(typeof(IJT808ConsumerOfT<byte[]>), (service)=> {
                 var loggerFactory = service.GetRequiredService<ILoggerFactory>();
                 var consumerConfig = service.GetRequiredService<IOptions<ConsumerConfig>>();
                 consumerConfig.Value.GroupId = "JT809.same.Test";
                 return new JT809_Same_Consumer(new JT809TopicOptions { TopicName = "jt809.same" }, consumerConfig, loggerFactory);
             });
-            serviceDescriptors.AddSingleton(typeof(JT809Consumer<JT809GpsPosition>), (service) => {
+            serviceDescriptors.AddSingleton(typeof(IJT808ConsumerOfT<JT809GpsPosition>), (service) => {
                 var loggerFactory = service.GetRequiredService<ILoggerFactory>();
                 var consumerConfig = service.GetRequiredService<IOptions<ConsumerConfig>>();
                 consumerConfig.Value.GroupId = "JT809.gps.Test";
@@ -70,14 +70,14 @@ namespace JT809.KafkaService
         {
             serviceDescriptors.Configure<ConsumerConfig>(configuration.GetSection("KafkaConsumerConfig"));
             serviceDescriptors.Configure(action); 
-            serviceDescriptors.AddSingleton(typeof(JT809PartitionConsumer<byte[]>), (service) => {
+            serviceDescriptors.AddSingleton(typeof(IJT808ConsumerOfT<byte[]>), (service) => {
                 var loggerFactory = service.GetRequiredService<ILoggerFactory>();
                 var consumerConfig = service.GetRequiredService<IOptions<ConsumerConfig>>();
                 var partitionOptions = service.GetRequiredService<IOptions<JT809PartitionOptions>>();
                 consumerConfig.Value.GroupId = "JT809.partition.same.Test";
                 return new JT809_Same_Partition_Consumer(consumerConfig, partitionOptions,new JT809TopicOptions { TopicName = "jt809.partition.same" } , loggerFactory);
             });
-            serviceDescriptors.AddSingleton(typeof(JT809PartitionConsumer<JT809GpsPosition>), (service) => {
+            serviceDescriptors.AddSingleton(typeof(IJT808ConsumerOfT<JT809GpsPosition>), (service) => {
                 var loggerFactory = service.GetRequiredService<ILoggerFactory>();
                 var consumerConfig = service.GetRequiredService<IOptions<ConsumerConfig>>();
                 var partitionOptions = service.GetRequiredService<IOptions<JT809PartitionOptions>>();
