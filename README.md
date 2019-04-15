@@ -12,6 +12,18 @@
 
 针对1对1的坏处，提高了维护成本。
 
+### 数据接入流程
+
+![superior_dataflow](https://github.com/SmallChi/JT808DotNetty/blob/master/doc/img/superior_dataflow.png)
+
 ### 数据处理
 
-由于目前数据不需要加工处理，只需要接收入库并且写入最后一条数据到Redis缓存中所以还是比较简单。
+1. 从网关接收到GPS数据，解析GPS数据，再使用Google Protocol Buffer定义GPS数据结构存储在kafka中，这样可以跨语言开发。
+
+2. 要是了解大数据存储及有能力运维的情况下，可以采用大数据替代方案。这里采用小众模式（主从模式），分表分区的方式存储，每天大概8千万左右。
+
+### 使用例子
+
+> 前提条件:需要安装kafka以及zookeeper
+
+![superior_demo](https://github.com/SmallChi/JT808DotNetty/blob/master/doc/img/superior_demo.png)
