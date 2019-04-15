@@ -14,7 +14,7 @@
 
 ### 数据接入流程
 
-![superior_dataflow](https://github.com/SmallChi/JT808DotNetty/blob/master/doc/img/superior_dataflow.png)
+![superior_dataflow](https://github.com/SmallChi/JT809DotNetty/blob/master/doc/img/superior_dataflow.png)
 
 ### 数据处理
 
@@ -26,4 +26,4 @@
 
 > 前提条件:需要安装kafka以及zookeeper
 
-![superior_demo](https://github.com/SmallChi/JT808DotNetty/blob/master/doc/img/superior_demo.png)
+![superior_demo](https://github.com/SmallChi/JT809DotNetty/blob/master/doc/img/superior_demo.png)
