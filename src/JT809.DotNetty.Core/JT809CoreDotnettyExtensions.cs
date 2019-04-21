@@ -19,6 +19,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Options;
 using JT808.DotNetty.WebApi;
 using JT809.DotNetty.Core.Session;
+using JT809.DotNetty.Core.Events;
 
 [assembly: InternalsVisibleTo("JT809.DotNetty.Core.Test")]
 
@@ -83,12 +84,32 @@ namespace JT809.DotNetty.Core
             //主从链路接收消息默认业务处理器
             serviceDescriptors.TryAddSingleton<JT809InferiorMsgIdReceiveHandlerBase, JT809InferiorMsgIdReceiveDefaultHandler>();
             //主从链路消息接收处理器
-            serviceDescriptors.TryAddScoped<JT809MainServerHandler>();
             serviceDescriptors.TryAddScoped<JT809SubordinateServerHandler>();
             //主链路客户端
-            serviceDescriptors.TryAddSingleton<JT809MainClient>();
+            //serviceDescriptors.TryAddSingleton<JT809MainClient>();
             //从链路服务端
             serviceDescriptors.AddHostedService<JT809SubordinateServerHost>();
+            return serviceDescriptors;
+        }
+
+        /// <summary>
+        /// 下级平台
+        /// 主链路为客户端
+        /// 从链路为服务端
+        /// </summary>
+        /// <param name="serviceDescriptors"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddJT809InferiorPlatformClient(this IServiceCollection serviceDescriptors)
+        {
+            serviceDescriptors.TryAddSingleton<IJT809ManualResetEvent, JT809InferoprManualResetEvent>();
+            //主从链路客户端和服务端连接处理器
+            serviceDescriptors.TryAddScoped<JT809MainClientConnectionHandler>();
+            //主从链路接收消息默认业务处理器
+            serviceDescriptors.TryAddSingleton<JT809InferiorMsgIdReceiveHandlerBase, JT809InferiorMsgIdReceiveDefaultHandler>();
+            //主从链路消息接收处理器
+            serviceDescriptors.TryAddScoped<JT809MainClientHandler>();
+            //主链路客户端
+            serviceDescriptors.TryAddSingleton<JT809MainClient>();
             return serviceDescriptors;
         }
 

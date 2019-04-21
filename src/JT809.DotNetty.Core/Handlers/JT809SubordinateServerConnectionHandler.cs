@@ -16,7 +16,6 @@ namespace JT809.DotNetty.Core.Handlers
         private readonly ILogger<JT809SubordinateServerConnectionHandler> logger;
 
         public JT809SubordinateServerConnectionHandler(
-            JT809SubordinateClient subordinateClient,
             ILoggerFactory loggerFactory)
         {
             logger = loggerFactory.CreateLogger<JT809SubordinateServerConnectionHandler>();
@@ -73,10 +72,7 @@ namespace JT809.DotNetty.Core.Handlers
             {
                 if (idleStateEvent.State == IdleState.ReaderIdle)
                 {
-                    if (idleStateEvent.State == IdleState.ReaderIdle)
-                    {
-                        context.CloseAsync();
-                    }
+                    context.CloseAsync();
                 }
             }
             base.UserEventTriggered(context, evt);

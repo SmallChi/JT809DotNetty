@@ -33,7 +33,6 @@ namespace JT809.DotNetty.Core.Servers
         private WorkerEventLoopGroup workerGroup;
         private IChannel bootstrapChannel;
         private IByteBufferAllocator serverBufferAllocator;
-        private ILoggerFactory loggerFactory;
 
         public JT809SubordinateServerHost(
             IServiceProvider provider,
@@ -43,7 +42,6 @@ namespace JT809.DotNetty.Core.Servers
             serviceProvider = provider;
             configuration = jT809ConfigurationAccessor.Value;
             logger = loggerFactory.CreateLogger<JT809SubordinateServerHost>();
-            this.loggerFactory = loggerFactory;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

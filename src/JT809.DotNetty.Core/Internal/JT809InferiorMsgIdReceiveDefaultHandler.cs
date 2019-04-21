@@ -17,7 +17,7 @@ namespace JT809.DotNetty.Core.Internal
     /// </summary>
     internal class JT809InferiorMsgIdReceiveDefaultHandler : JT809InferiorMsgIdReceiveHandlerBase
     {
-        public JT809InferiorMsgIdReceiveDefaultHandler(ILoggerFactory loggerFactory, IOptions<JT809Configuration> jT809ConfigurationAccessor, IJT809VerifyCodeGenerator verifyCodeGenerator, JT809SubordinateClient subordinateLinkClient) : base(loggerFactory, jT809ConfigurationAccessor, verifyCodeGenerator, subordinateLinkClient)
+        public JT809InferiorMsgIdReceiveDefaultHandler(IJT809ManualResetEvent jT809ManualResetEvent, ILoggerFactory loggerFactory) : base(jT809ManualResetEvent, loggerFactory)
         {
         }
     }
