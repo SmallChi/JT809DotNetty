@@ -51,7 +51,7 @@ namespace JT809.Inferior.Client
                             {
                                 Day = (byte)(DateTime.Now.Day),
                                 Month = (byte)(DateTime.Now.Month),
-                                Year = (byte)(DateTime.Now.Year),
+                                Year = (ushort)(DateTime.Now.Year),
                                 Hour = (byte)(DateTime.Now.Hour),
                                 Minute = (byte)(DateTime.Now.Minute),
                                 Second = (byte)(DateTime.Now.Second),
