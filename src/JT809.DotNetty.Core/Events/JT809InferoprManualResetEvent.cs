@@ -17,7 +17,7 @@ namespace JT809.DotNetty.Core.Events
 
         public void Pause()
         {
-            ManualResetEvent.WaitOne();
+            ManualResetEvent.WaitOne(TimeSpan.FromSeconds(10));
         }
 
         public bool Reset()
