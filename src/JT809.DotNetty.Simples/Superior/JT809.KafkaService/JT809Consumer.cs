@@ -12,17 +12,16 @@ namespace JT809.KafkaService
     public abstract class JT809Consumer<T> : JT809ConsumerBase<T>
     {
         private bool _disposed = false;
-        public override CancellationTokenSource Cts => new CancellationTokenSource();
+        public override CancellationTokenSource Cts { get; }= new CancellationTokenSource();
 
         protected ILogger logger { get; }
 
         protected override IList<IConsumer<string, T>> Consumers { get; }
 
         protected JT809Consumer(
-            IOptions<JT809TopicOptions> topicOptionsAccessor, 
             IOptions<ConsumerConfig> consumerConfigAccessor,
             ILoggerFactory loggerFactory) 
-            : base(topicOptionsAccessor.Value.TopicName, consumerConfigAccessor.Value)
+            : base(consumerConfigAccessor.Value)
         {
             logger = loggerFactory.CreateLogger("JT809Consumer");
             Consumers = new List<IConsumer<string, T>>();
@@ -31,10 +30,6 @@ namespace JT809.KafkaService
             {
                 logger.LogError(error.Reason);
             });
-            if (Deserializer != null)
-            {
-                consumerBuilder.SetValueDeserializer(Deserializer);
-            }
             Consumers.Add(consumerBuilder.Build());
         }
 
@@ -52,19 +47,19 @@ namespace JT809.KafkaService
                         var data = Consumers[0].Consume(Cts.Token);
                         if (logger.IsEnabled(LogLevel.Debug))
                         {
-                            logger.LogDebug($"Topic: {data.Topic} Key: {data.Key} Partition: {data.Partition} Offset: {data.Offset} Data:{string.Join("", data.Value)} TopicPartitionOffset:{data.TopicPartitionOffset}");
+                            logger.LogDebug($"Topic: {data.Topic} Key: {data.Message.Key} Partition: {data.Partition} Offset: {data.Offset} Data:{string.Join("", data.Message.Value)} TopicPartitionOffset:{data.TopicPartitionOffset}");
                         }
-                        callback((data.Key, data.Value));
+                        callback((data.Message.Key, data.Message.Value));
                     }
                     catch (ConsumeException ex)
                     {
-                        logger.LogError(ex, TopicName);
-                        Thread.Sleep(1000);
+#warning topicname
+                        logger.LogError(ex, "");
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError(ex, TopicName);
-                        Thread.Sleep(1000);
+#warning topicname
+                        logger.LogError(ex, "");
                     }
                 }
             }, Cts.Token);            
@@ -74,7 +69,8 @@ namespace JT809.KafkaService
         {
             if (_disposed) return;
             //仅有一个分区才需要订阅
-            Consumers[0].Subscribe(TopicName);
+#warning topicname
+            Consumers[0].Subscribe("");
         }
 
         public override void Unsubscribe()

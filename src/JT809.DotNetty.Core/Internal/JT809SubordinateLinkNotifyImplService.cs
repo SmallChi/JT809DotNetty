@@ -19,13 +19,16 @@ namespace JT809.DotNetty.Core.Internal
         private readonly JT809Configuration configuration;
         private readonly JT809SuperiorMainSessionManager jT809SuperiorMainSessionManager;
         private readonly ILogger logger;
+        private readonly JT809Serializer JT809Serializer;
 
         public JT809SubordinateLinkNotifyImplService(
             ILoggerFactory loggerFactory,
+             IJT809Config jT809Config,
             IOptions<JT809Configuration> jT809ConfigurationAccessor,
             JT809SuperiorMainSessionManager jT809SuperiorMainSessionManager
             )
         {
+            JT809Serializer = jT809Config.GetSerializer();
             this.logger = loggerFactory.CreateLogger<JT809SubordinateLinkNotifyImplService>();
             configuration = jT809ConfigurationAccessor.Value;
             this.jT809SuperiorMainSessionManager = jT809SuperiorMainSessionManager;
@@ -33,26 +36,29 @@ namespace JT809.DotNetty.Core.Internal
 
         public void Notify(JT809_0x9007_ReasonCode reasonCode)
         {
-            Notify(reasonCode, JT809GlobalConfig.Instance.HeaderOptions.MsgGNSSCENTERID);
+#warning JT809GlobalConfig
+            //Notify(reasonCode, JT809GlobalConfig.Instance.HeaderOptions.MsgGNSSCENTERID);
         }
 
         public void Notify(JT809_0x9007_ReasonCode reasonCode, uint msgGNSSCENTERID)
         {
             if (configuration.SubordinateClientEnable)
             {
-                var session = jT809SuperiorMainSessionManager.GetSession(JT809GlobalConfig.Instance.HeaderOptions.MsgGNSSCENTERID);
-                if (session != null)
-                {
-                    //发送从链路注销请求
-                    var package = JT809BusinessType.从链路断开通知消息.Create(new JT809_0x9007()
-                    {
-                        ReasonCode = reasonCode
-                    });
-                    JT809Response jT809Response = new JT809Response(package, 100);
-                    if(logger.IsEnabled(LogLevel.Information))
-                        logger.LogInformation($"从链路断开通知消息>>>{JT809Serializer.Serialize(package, 100).ToHexString()}");
-                    session.Channel.WriteAndFlushAsync(jT809Response);
-                }
+#warning JT809GlobalConfig 
+                //var session = jT809SuperiorMainSessionManager.GetSession(JT809GlobalConfig.Instance.HeaderOptions.MsgGNSSCENTERID);
+                //if (session != null)
+                //{
+                //    //发送从链路注销请求
+                //    var package = JT809BusinessType.从链路断开通知消息.Create(new JT809_0x9007()
+                //    {
+#warning JT809_0x9007_ReasonCode???
+                //        ErrorCode =  JT809_0x1007_ErrorCode.主链路断开
+                //    });
+                //    JT809Response jT809Response = new JT809Response(package, 100);
+                //    if(logger.IsEnabled(LogLevel.Information))
+                //        logger.LogInformation($"从链路断开通知消息>>>{JT809Serializer.Serialize(package, 100).ToHexString()}");
+                //    session.Channel.WriteAndFlushAsync(jT809Response);
+                //}
             }
         }
     }

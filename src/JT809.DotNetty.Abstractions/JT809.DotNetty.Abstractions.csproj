@@ -12,9 +12,8 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <RepositoryUrl>https://github.com/SmallChi/JT809DotNetty</RepositoryUrl>
     <PackageProjectUrl>https://github.com/SmallChi/JT809DotNetty</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/SmallChi/JT809DotNetty/blob/master/LICENSE</PackageLicenseUrl>
+    <license>https://github.com/SmallChi/JT809DotNetty/blob/master/LICENSE</license>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.0.0</Version>
   </PropertyGroup>
-
 </Project>

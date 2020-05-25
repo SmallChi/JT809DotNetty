@@ -27,7 +27,8 @@ namespace JT809.GpsConsumer
                 {
                     services.AddSingleton<ILoggerFactory, LoggerFactory>();
                     services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
-                    services.AddJT809KafkaConsumerPartitionsService(hostContext.Configuration, options => options.Partition = 10);
+#warning AddJT809KafkaConsumerPartitionsService
+                    //services.AddJT809KafkaConsumerPartitionsService(hostContext.Configuration, options => options.Partition = 10);
                     services.AddHostedService<GpsConsumerService>();
                 });
 

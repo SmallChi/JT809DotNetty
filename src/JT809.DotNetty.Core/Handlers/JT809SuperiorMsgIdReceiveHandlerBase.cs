@@ -32,31 +32,30 @@ namespace JT809.DotNetty.Core.Handlers
             this.Logger = loggerFactory.CreateLogger<JT809SuperiorMsgIdReceiveHandlerBase>();
             this.VerifyCodeGenerator = verifyCodeGenerator;
             this.SubordinateLoginService = jT809SubordinateLoginService;
-            HandlerDict = new Dictionary<JT809BusinessType, Func<JT809Request, JT809Response>>
+            HandlerDict = new Dictionary<ushort, Func<JT809Request, JT809Response>>
             {
-                {JT809BusinessType.主链路登录请求消息, Msg0x1001},
-                {JT809BusinessType.主链路注销请求消息, Msg0x1003},
-                {JT809BusinessType.主链路连接保持请求消息, Msg0x1005},
-                {JT809BusinessType.主链路断开通知消息,Msg0x1007 },
-                {JT809BusinessType.主链路动态信息交换消息, Msg0x1200},
-                {JT809BusinessType.下级平台主动关闭链路通知消息, Msg0x1008},
-
-                {JT809BusinessType.从链路连接应答消息, Msg0x9002},
-                {JT809BusinessType.从链路注销应答消息, Msg0x9004},
-                {JT809BusinessType.从链路连接保持应答消息, Msg0x9006},
+                {JT809BusinessType.主链路登录请求消息.ToUInt16Value(), Msg0x1001},
+                {JT809BusinessType.主链路注销请求消息.ToUInt16Value(), Msg0x1003},
+                {JT809BusinessType.主链路连接保持请求消息.ToUInt16Value(), Msg0x1005},
+                {JT809BusinessType.主链路断开通知消息.ToUInt16Value(),Msg0x1007 },
+                {JT809BusinessType.主链路车辆动态信息交换业务.ToUInt16Value(), Msg0x1200},
+                {JT809BusinessType.下级平台主动关闭主从链路通知消息.ToUInt16Value(), Msg0x1008},
+                {JT809BusinessType.从链路连接保持应答消息.ToUInt16Value(), Msg0x9002},
+                {JT809BusinessType.从链路注销应答消息.ToUInt16Value(), Msg0x9004},
+                {JT809BusinessType.从链路连接保持应答消息.ToUInt16Value(), Msg0x9006},
             };
-            SubHandlerDict = new Dictionary<JT809SubBusinessType, Func<JT809Request, JT809Response>>
+            SubHandlerDict = new Dictionary<ushort, Func<JT809Request, JT809Response>>
             {
-                {JT809SubBusinessType.上传车辆注册信息, Msg0x1200_0x1201},
-                {JT809SubBusinessType.主动上报驾驶员身份信息, Msg0x1200_0x120C},
-                {JT809SubBusinessType.实时上传车辆定位信息, Msg0x1200_0x1202},
-                {JT809SubBusinessType.车辆定位信息自动补报, Msg0x1200_0x1203},
+                {JT809SubBusinessType.上传车辆注册信息.ToUInt16Value(), Msg0x1200_0x1201},
+                {JT809SubBusinessType.主动上报驾驶员身份信息消息.ToUInt16Value(), Msg0x1200_0x120C},
+                {JT809SubBusinessType.实时上传车辆定位信息.ToUInt16Value(), Msg0x1200_0x1202},
+                {JT809SubBusinessType.车辆定位信息自动补报请求消息.ToUInt16Value(), Msg0x1200_0x1203},
             };
         }
 
-        public Dictionary<JT809BusinessType, Func<JT809Request, JT809Response>> HandlerDict { get; protected set; }
+        public Dictionary<ushort, Func<JT809Request, JT809Response>> HandlerDict { get; protected set; }
 
-        public Dictionary<JT809SubBusinessType, Func<JT809Request, JT809Response>> SubHandlerDict { get; protected set; }
+        public Dictionary<ushort, Func<JT809Request, JT809Response>> SubHandlerDict { get; protected set; }
 
         /// <summary>
         /// 主链路登录请求消息

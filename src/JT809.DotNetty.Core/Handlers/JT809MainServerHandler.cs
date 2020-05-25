@@ -24,8 +24,10 @@ namespace JT809.DotNetty.Core.Handlers
         private readonly JT809SuperiorMainSessionManager SuperiorMainSessionManager;
 
         private readonly ILogger<JT809MainServerHandler> logger;
+        private readonly JT809Serializer JT809Serializer;
 
         public JT809MainServerHandler(
+            IJT809Config jT809Config,
             ILoggerFactory loggerFactory,
             JT809SuperiorMsgIdReceiveHandlerBase handler,
             JT809SuperiorMainSessionManager superiorMainSessionManager,
@@ -33,6 +35,7 @@ namespace JT809.DotNetty.Core.Handlers
 
             )
         {
+            JT809Serializer = jT809Config.GetSerializer();
             this.handler = handler;
             this.jT809AtomicCounterService = jT809AtomicCounterServiceFactorty.Create(JT809AtomicCounterType.ServerMain.ToString()); ;
             this.SuperiorMainSessionManager = superiorMainSessionManager;

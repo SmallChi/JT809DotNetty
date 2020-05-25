@@ -19,19 +19,14 @@ namespace JT809.KafkaService
         protected virtual IProducer<string, T> CreateProducer()
         {
             ProducerBuilder<string, T> producerBuilder = new ProducerBuilder<string, T>(ProducerConfig);
-            if (Serializer != null)
-            {
-                producerBuilder.SetValueSerializer(Serializer);
-            }
             return producerBuilder.Build();
         }
 
         protected override IProducer<string, T> Producer { get; }
 
         protected JT809Producer(
-            IOptions<JT809TopicOptions> topicOptionAccessor,
-            IOptions<ProducerConfig> producerConfigAccessor) 
-            : base(topicOptionAccessor.Value.TopicName, producerConfigAccessor.Value)
+            IOptions<ProducerConfig> producerConfigAccessor)
+            : base(producerConfigAccessor.Value)
         {
             Producer = CreateProducer();
         }
@@ -56,7 +51,8 @@ namespace JT809.KafkaService
         public override async void ProduceAsync(string msgId, string vno_color, T data)
         {
             if (_disposed) return;
-            await Producer.ProduceAsync(TopicName, new Message<string, T>
+#warning topicname
+            await Producer.ProduceAsync("", new Message<string, T>
             {
                 Key = msgId,
                 Value = data

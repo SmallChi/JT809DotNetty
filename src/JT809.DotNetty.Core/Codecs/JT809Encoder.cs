@@ -14,9 +14,13 @@ namespace JT809.DotNetty.Core.Codecs
     internal class JT809Encoder : MessageToByteEncoder<JT809Response>
     {
         private readonly ILogger<JT809Encoder> logger;
+        private readonly JT809Serializer JT809Serializer;
 
-        public JT809Encoder(ILoggerFactory loggerFactory)
+        public JT809Encoder(
+            IJT809Config jT809Config,
+            ILoggerFactory loggerFactory)
         {
+            JT809Serializer = jT809Config.GetSerializer();
             logger = loggerFactory.CreateLogger<JT809Encoder>();
         }
         protected override void Encode(IChannelHandlerContext context, JT809Response message, IByteBuffer output)

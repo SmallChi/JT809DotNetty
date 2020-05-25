@@ -41,15 +41,18 @@ namespace JT809.DotNetty.Core.Clients
         private readonly IJT809VerifyCodeGenerator verifyCodeGenerator;
 
         private readonly IJT809SubordinateLinkNotifyService subordinateLinkNotifyService;
+        private readonly JT809Serializer JT809Serializer;
 
         private bool disposed = false;
 
         public JT809SubordinateClient(
+            IJT809Config jT809Config,
             IServiceProvider provider,
             ILoggerFactory loggerFactory,
             IJT809SubordinateLinkNotifyService subordinateLinkNotifyService,
             IJT809VerifyCodeGenerator verifyCodeGenerator)
         {
+            this.JT809Serializer = jT809Config.GetSerializer();
             this.serviceProvider = provider;
             this.loggerFactory = loggerFactory;
             this.verifyCodeGenerator = verifyCodeGenerator;

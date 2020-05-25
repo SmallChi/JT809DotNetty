@@ -44,7 +44,7 @@ namespace JT809.Inferior.Client
                         JT809.Protocol.MessageBody.JT809_0x1200 jT809_0X1200 = new Protocol.MessageBody.JT809_0x1200();
                         jT809_0X1200.VehicleColor = Protocol.Enums.JT809VehicleColorType.黄色;
                         jT809_0X1200.VehicleNo = "粤A12345";
-                        jT809_0X1200.SubBusinessType = Protocol.Enums.JT809SubBusinessType.实时上传车辆定位信息;
+                        jT809_0X1200.SubBusinessType = Protocol.Enums.JT809SubBusinessType.实时上传车辆定位信息.ToUInt16Value();
                         jT809_0X1200.SubBodies = new JT809_0x1200_0x1202()
                         {
                             VehiclePosition = new JT809VehiclePositionProperties
@@ -66,7 +66,7 @@ namespace JT809.Inferior.Client
                                 Vec3 = 12
                             }
                         };
-                        var package = JT809.Protocol.Enums.JT809BusinessType.主链路动态信息交换消息.Create(jT809_0X1200);
+                        var package = JT809.Protocol.Enums.JT809BusinessType.主链路车辆动态信息交换业务.Create(jT809_0X1200);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-2s");
                         Thread.Sleep(2000);
@@ -79,7 +79,7 @@ namespace JT809.Inferior.Client
                         JT809.Protocol.MessageBody.JT809_0x1200 jT809_0X1200 = new Protocol.MessageBody.JT809_0x1200();
                         jT809_0X1200.VehicleColor = Protocol.Enums.JT809VehicleColorType.黄色;
                         jT809_0X1200.VehicleNo = "粤A12346";
-                        jT809_0X1200.SubBusinessType = Protocol.Enums.JT809SubBusinessType.实时上传车辆定位信息;
+                        jT809_0X1200.SubBusinessType = Protocol.Enums.JT809SubBusinessType.实时上传车辆定位信息.ToUInt16Value();
                         jT809_0X1200.SubBodies = new JT809_0x1200_0x1202()
                         {
                             VehiclePosition = new JT809VehiclePositionProperties
@@ -101,7 +101,7 @@ namespace JT809.Inferior.Client
                                 Vec3 = 12
                             }
                         };
-                        var package = JT809.Protocol.Enums.JT809BusinessType.主链路动态信息交换消息.Create(jT809_0X1200);
+                        var package = JT809.Protocol.Enums.JT809BusinessType.主链路车辆动态信息交换业务.Create(jT809_0X1200);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);

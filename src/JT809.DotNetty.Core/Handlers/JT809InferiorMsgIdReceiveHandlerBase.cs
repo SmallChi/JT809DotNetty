@@ -32,23 +32,23 @@ namespace JT809.DotNetty.Core.Handlers
         {
             this.Logger = loggerFactory.CreateLogger<JT809SuperiorMsgIdReceiveHandlerBase>();
             this.ManualResetEvent = jT809ManualResetEvent;
-            HandlerDict = new Dictionary<JT809BusinessType, Func<JT809Request, JT809Response>>
+            HandlerDict = new Dictionary<ushort, Func<JT809Request, JT809Response>>
             {
-                {JT809BusinessType.主链路登录应答消息,Msg0x1002},
-                {JT809BusinessType.主链路连接保持应答消息,Msg0x1006},
-                {JT809BusinessType.从链路连接请求消息,Msg0x9001},
-                {JT809BusinessType.从链路注销请求消息, Msg0x9003},
-                {JT809BusinessType.从链路连接保持请求消息,Msg0x9005 }, 
+                {JT809BusinessType.主链路登录应答消息.ToUInt16Value(),Msg0x1002},
+                {JT809BusinessType.主链路连接保持应答消息.ToUInt16Value(),Msg0x1006},
+                {JT809BusinessType.从链路连接请求消息.ToUInt16Value(),Msg0x9001},
+                {JT809BusinessType.从链路注销请求消息.ToUInt16Value(), Msg0x9003},
+                {JT809BusinessType.从链路连接保持请求消息.ToUInt16Value(),Msg0x9005 }, 
             };
-            SubHandlerDict = new Dictionary<JT809SubBusinessType, Func<JT809Request, JT809Response>>
+            SubHandlerDict = new Dictionary<ushort, Func<JT809Request, JT809Response>>
             {
                 //{JT809SubBusinessType.实时上传车辆定位信息, Msg0x1200_0x1202},
             };
         }
 
-        public Dictionary<JT809BusinessType, Func<JT809Request, JT809Response>> HandlerDict { get; protected set; }
+        public Dictionary<ushort, Func<JT809Request, JT809Response>> HandlerDict { get; protected set; }
 
-        public Dictionary<JT809SubBusinessType, Func<JT809Request, JT809Response>> SubHandlerDict { get; protected set; }
+        public Dictionary<ushort, Func<JT809Request, JT809Response>> SubHandlerDict { get; protected set; }
 
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace JT809.DotNetty.Core.Handlers
         /// <returns>从链路连接应答消息</returns>
         public virtual JT809Response Msg0x9001(JT809Request request)
         {
-            var package = JT809BusinessType.从链路连接应答消息.Create(new JT809_0x9002 {
+            var package = JT809BusinessType.从链路连接应答信息.Create(new JT809_0x9002 {
                 Result = JT809_0x9002_Result.成功
             });
             if (Logger.IsEnabled(LogLevel.Information))

@@ -13,14 +13,8 @@ namespace JT809.KafkaService
 {
     public sealed class JT809_GpsPosition_Consumer : JT809Consumer<JT809GpsPosition>
     {
-        public JT809_GpsPosition_Consumer(IOptions<JT809TopicOptions> topicOptionsAccessor, IOptions<ConsumerConfig> consumerConfigAccessor, ILoggerFactory loggerFactory) : base(topicOptionsAccessor, consumerConfigAccessor, loggerFactory)
+        public JT809_GpsPosition_Consumer(IOptions<ConsumerConfig> consumerConfigAccessor, ILoggerFactory loggerFactory) : base( consumerConfigAccessor, loggerFactory)
         {
         }
-
-        protected override Deserializer<JT809GpsPosition> Deserializer => (data, isNull) => {
-            if (isNull) return default;
-            return new MessageParser<JT809GpsPosition>(() => new JT809GpsPosition())
-                   .ParseFrom(data.ToArray());
-        };
     }
 }

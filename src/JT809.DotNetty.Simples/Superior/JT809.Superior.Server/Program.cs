@@ -40,7 +40,8 @@ namespace JT809.Superior.Server
                                 options.TcpPort = 808;
                             });
                     services.Configure<JT809GpsOptions>(hostContext.Configuration.GetSection("JT809GpsOptions"));
-                    services.AddJT809KafkaProducerPartitionsService(hostContext.Configuration,options=> options.Partition=10);
+#warning AddJT809KafkaProducerPartitionsService
+                    //services.AddJT809KafkaProducerPartitionsService(hostContext.Configuration,options=> options.Partition=10);
                     services.Replace(new ServiceDescriptor(typeof(JT809SuperiorMsgIdReceiveHandlerBase), typeof(JT809SuperiorMsgIdReceiveHandler), ServiceLifetime.Singleton));
                 });
 

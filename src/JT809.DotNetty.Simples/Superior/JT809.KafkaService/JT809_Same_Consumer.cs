@@ -13,8 +13,8 @@ namespace JT809.KafkaService
 {
     public sealed class JT809_Same_Consumer : JT809Consumer<byte[]>
     {
-        public JT809_Same_Consumer(IOptions<JT809TopicOptions> topicOptionsAccessor, IOptions<ConsumerConfig> consumerConfigAccessor, ILoggerFactory loggerFactory) 
-            : base(topicOptionsAccessor, consumerConfigAccessor, loggerFactory)
+        public JT809_Same_Consumer(IOptions<ConsumerConfig> consumerConfigAccessor, ILoggerFactory loggerFactory) 
+            : base(consumerConfigAccessor, loggerFactory)
         {
         }
     }

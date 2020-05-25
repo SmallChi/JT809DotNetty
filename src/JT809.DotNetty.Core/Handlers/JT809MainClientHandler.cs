@@ -22,13 +22,16 @@ namespace JT809.DotNetty.Core.Handlers
 
         private readonly ILogger<JT809MainServerHandler> logger;
 
+        private readonly JT809Serializer JT809Serializer;
         public JT809MainClientHandler(
+            IJT809Config jT809Config,
             ILoggerFactory loggerFactory,
             JT809InferiorMsgIdReceiveHandlerBase handler,
             JT809AtomicCounterServiceFactory jT809AtomicCounterServiceFactorty
             )
         {
             this.handler = handler;
+            JT809Serializer = jT809Config.GetSerializer();
             this.jT809AtomicCounterService = jT809AtomicCounterServiceFactorty.Create(JT809AtomicCounterType.ClientMain.ToString());
             logger = loggerFactory.CreateLogger<JT809MainServerHandler>();
         }

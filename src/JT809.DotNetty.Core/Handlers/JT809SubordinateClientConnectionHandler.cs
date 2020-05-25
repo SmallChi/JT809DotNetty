@@ -22,12 +22,15 @@ namespace JT809.DotNetty.Core.Handlers
         private readonly ILogger<JT809SubordinateClientConnectionHandler> logger;
         private readonly JT809SubordinateClient subordinateClient;
         private readonly IJT809SubordinateLinkNotifyService JT809SubordinateLinkNotifyService;
+        private readonly JT809Serializer JT809Serializer;
 
         public JT809SubordinateClientConnectionHandler(
+            IJT809Config jT809Config,
             IJT809SubordinateLinkNotifyService jT809SubordinateLinkNotifyService,
             JT809SubordinateClient jT809SubordinateClient,
             ILoggerFactory loggerFactory)
         {
+            JT809Serializer = jT809Config.GetSerializer();
             logger = loggerFactory.CreateLogger<JT809SubordinateClientConnectionHandler>();
             JT809SubordinateLinkNotifyService = jT809SubordinateLinkNotifyService;
             subordinateClient = jT809SubordinateClient;
