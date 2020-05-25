@@ -1,5 +1,6 @@
 ﻿using Confluent.Kafka;
 using Confluent.Kafka.Admin;
+using JT809.KafkaService.Configs;
 using JT809.PubSub.Abstractions;
 using Microsoft.Extensions.Options;
 using System;
@@ -25,7 +26,7 @@ namespace JT809.KafkaService
         protected override IProducer<string, T> Producer { get; }
 
         protected JT809Producer(
-            IOptions<ProducerConfig> producerConfigAccessor)
+            IOptions<JT809ProducerConfig> producerConfigAccessor)
             : base(producerConfigAccessor.Value)
         {
             Producer = CreateProducer();
@@ -51,8 +52,7 @@ namespace JT809.KafkaService
         public override async void ProduceAsync(string msgId, string vno_color, T data)
         {
             if (_disposed) return;
-#warning topicname
-            await Producer.ProduceAsync("", new Message<string, T>
+            await Producer.ProduceAsync(ProducerConfig.TopicName, new Message<string, T>
             {
                 Key = msgId,
                 Value = data

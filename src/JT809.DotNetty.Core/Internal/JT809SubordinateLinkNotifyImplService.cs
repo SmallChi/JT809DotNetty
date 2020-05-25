@@ -44,18 +44,17 @@ namespace JT809.DotNetty.Core.Internal
         {
             if (configuration.SubordinateClientEnable)
             {
-#warning JT809GlobalConfig 
+#warning jT809SuperiorMainSessionManager
                 //var session = jT809SuperiorMainSessionManager.GetSession(JT809GlobalConfig.Instance.HeaderOptions.MsgGNSSCENTERID);
                 //if (session != null)
                 //{
                 //    //发送从链路注销请求
                 //    var package = JT809BusinessType.从链路断开通知消息.Create(new JT809_0x9007()
                 //    {
-#warning JT809_0x9007_ReasonCode???
-                //        ErrorCode =  JT809_0x1007_ErrorCode.主链路断开
+                //        ReasonCode   = reasonCode
                 //    });
                 //    JT809Response jT809Response = new JT809Response(package, 100);
-                //    if(logger.IsEnabled(LogLevel.Information))
+                //    if (logger.IsEnabled(LogLevel.Information))
                 //        logger.LogInformation($"从链路断开通知消息>>>{JT809Serializer.Serialize(package, 100).ToHexString()}");
                 //    session.Channel.WriteAndFlushAsync(jT809Response);
                 //}
