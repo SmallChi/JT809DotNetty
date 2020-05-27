@@ -1,4 +1,5 @@
 ﻿using JT809.GrpcProtos;
+using JT809.KafkaService;
 using JT809.PubSub.Abstractions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -13,13 +14,13 @@ namespace JT809.GpsConsumer
 {
     public class GpsConsumerService : IHostedService
     {
-        private readonly IJT808ConsumerOfT<JT809GpsPosition> jT808Consumer;
+        private readonly JT809_GpsPosition_Consumer jT808Consumer;
 
         private readonly ILogger logger;
 
         public GpsConsumerService(
             ILoggerFactory loggerFactory,
-            IJT808ConsumerOfT<JT809GpsPosition> jT808Consumer)
+            JT809_GpsPosition_Consumer jT808Consumer)
         {
             this.jT808Consumer = jT808Consumer;
             logger = loggerFactory.CreateLogger<GpsConsumerService>();

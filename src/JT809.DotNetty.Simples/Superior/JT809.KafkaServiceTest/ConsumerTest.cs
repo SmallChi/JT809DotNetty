@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using JT809.Protocol.Enums;
 using JT809.Protocol.Extensions;
 using System.Threading;
+using Google.Protobuf;
+using JT809.GrpcProtos;
 
 namespace JT809.KafkaServiceTest
 {
@@ -16,9 +18,10 @@ namespace JT809.KafkaServiceTest
             consumerTestService.GpsConsumer.OnMessage((Message)=> 
             {
                 Assert.Equal(JT809SubBusinessType.实时上传车辆定位信息.ToValueString(), Message.MsgId);
-                Assert.Equal("粤A23456", Message.Data.Vno);
-                Assert.Equal(2, Message.Data.VColor);
-                Assert.Equal("smallchi", Message.Data.FromChannel);
+                JT809GpsPosition jT809GpsPosition = JT809GpsPosition.Parser.ParseFrom(Message.Data);
+                Assert.Equal("粤A23456", jT809GpsPosition.Vno);
+                Assert.Equal(2, jT809GpsPosition.VColor);
+                Assert.Equal("smallchi", jT809GpsPosition.FromChannel);
             });
             consumerTestService.GpsConsumer.Subscribe();
 

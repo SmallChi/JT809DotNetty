@@ -9,9 +9,9 @@ namespace JT809.KafkaServiceTest
 {
     public class ConsumerTestService
     {
-        public IJT808ConsumerOfT<byte[]> SameConsumer { get; }
-        public IJT808ConsumerOfT<JT809GpsPosition> GpsConsumer { get; }
-        public ConsumerTestService(IJT808ConsumerOfT<byte[]> sameConsumer, IJT808ConsumerOfT<JT809GpsPosition> gpsConsumer)
+        public JT809_Same_Consumer SameConsumer { get; }
+        public JT809_GpsPosition_Consumer GpsConsumer { get; }
+        public ConsumerTestService(JT809_Same_Consumer sameConsumer, JT809_GpsPosition_Consumer gpsConsumer)
         {
             SameConsumer = sameConsumer;
             GpsConsumer = gpsConsumer;

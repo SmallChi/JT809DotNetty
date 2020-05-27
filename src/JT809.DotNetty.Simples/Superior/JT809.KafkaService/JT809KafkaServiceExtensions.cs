@@ -1,5 +1,6 @@
 ﻿using Confluent.Kafka;
 using JT809.GrpcProtos;
+using JT809.KafkaService.Configs;
 using JT809.PubSub.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,43 +16,33 @@ namespace JT809.KafkaService
     {
         public static IServiceCollection AddJT809KafkaProducerService(this IServiceCollection serviceDescriptors, IConfiguration configuration)
         {
-            serviceDescriptors.Configure<ProducerConfig>(configuration.GetSection("KafkaProducerConfig"));
-            serviceDescriptors.AddSingleton(typeof(IJT809ProducerOfT<byte[]>), (service) => {
-                var producerConfig = service.GetRequiredService<IOptions<ProducerConfig>>();
-#warning JT809_Same_Producer
-                //return new JT809_Same_Producer(new JT809TopicOptions { TopicName = "jt809.same" }, producerConfig);
-                return null;
-            });
-            serviceDescriptors.AddSingleton(typeof(IJT809ProducerOfT<JT809GpsPosition>), (service) => {
-                var producerConfig = service.GetRequiredService<IOptions<ProducerConfig>>();
-#warning JT809_GpsPositio_Producer
-                //return new JT809_GpsPositio_Producer(new JT809TopicOptions { TopicName = "jt809.gps" }, producerConfig);
-                return null;
-            });
+            serviceDescriptors.Configure<JT809ProducerConfig>(configuration.GetSection("JT809ProducerConfig"));
+            serviceDescriptors.AddSingleton<JT809_GpsPositio_Producer>();
             return serviceDescriptors;
         }
 
 
         public static IServiceCollection AddJT809KafkaConsumerService(this IServiceCollection serviceDescriptors, IConfiguration configuration)
         {
-            serviceDescriptors.Configure<ConsumerConfig>(configuration.GetSection("KafkaConsumerConfig"));
-            serviceDescriptors.AddSingleton(typeof(IJT808ConsumerOfT<byte[]>), (service)=> {
-                var loggerFactory = service.GetRequiredService<ILoggerFactory>();
-                var consumerConfig = service.GetRequiredService<IOptions<ConsumerConfig>>();
-                consumerConfig.Value.GroupId = "JT809.same.Test";
-#warning JT809_Same_Consumer
-                //return new JT809_Same_Consumer(new JT809TopicOptions { TopicName = "jt809.same" }, consumerConfig, loggerFactory);
-                return null;
-            });
-            serviceDescriptors.AddSingleton(typeof(IJT808ConsumerOfT<JT809GpsPosition>), (service) => {
-                var loggerFactory = service.GetRequiredService<ILoggerFactory>();
-                var consumerConfig = service.GetRequiredService<IOptions<ConsumerConfig>>();
-                consumerConfig.Value.GroupId = "JT809.gps.Test";
-#warning JT809_GpsPosition_Consumer
-                //return new JT809_GpsPosition_Consumer(new JT809TopicOptions { TopicName = "jt809.gps" }, consumerConfig, loggerFactory);
-                return null;
-            });
+            serviceDescriptors.Configure<JT809ConsumerConfig>(configuration.GetSection("JT809ConsumerConfig"));
+            serviceDescriptors.AddSingleton<JT809_GpsPosition_Consumer>();
             return serviceDescriptors;
         }
+
+        public static IServiceCollection AddJT809KafkaSameProducerService(this IServiceCollection serviceDescriptors, IConfiguration configuration)
+        {
+            serviceDescriptors.Configure<JT809SameProducerConfig>(configuration.GetSection("JT809SameProducerConfig"));
+            serviceDescriptors.AddSingleton<JT809_GpsPositio_Producer>();
+            return serviceDescriptors;
+        }
+
+
+        public static IServiceCollection AddJT809KafkaSameConsumerService(this IServiceCollection serviceDescriptors, IConfiguration configuration)
+        {
+            serviceDescriptors.Configure<JT809SameConsumerConfig>(configuration.GetSection("JT809SameConsumerConfig"));
+            serviceDescriptors.AddSingleton<JT809_Same_Consumer>();
+            return serviceDescriptors;
+        }
+
     }
 }

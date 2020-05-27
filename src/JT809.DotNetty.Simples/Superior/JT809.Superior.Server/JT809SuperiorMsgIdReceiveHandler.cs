@@ -1,7 +1,9 @@
-﻿using JT809.DotNetty.Core.Handlers;
+﻿using Google.Protobuf;
+using JT809.DotNetty.Core.Handlers;
 using JT809.DotNetty.Core.Interfaces;
 using JT809.DotNetty.Core.Metadata;
 using JT809.GrpcProtos;
+using JT809.KafkaService;
 using JT809.Protocol;
 using JT809.Protocol.SubMessageBody;
 using JT809.PubSub.Abstractions;
@@ -16,11 +18,11 @@ namespace JT809.Superior.Server
 {
     public sealed class JT809SuperiorMsgIdReceiveHandler : JT809SuperiorMsgIdReceiveHandlerBase
     {
-        private readonly IJT809ProducerOfT<JT809GpsPosition> producer;
+        private readonly JT809_GpsPositio_Producer producer;
         private readonly JT809GpsOptions gpsOptions;
         public JT809SuperiorMsgIdReceiveHandler(
             IOptions<JT809GpsOptions>jt809GpsAccessor,
-            IJT809ProducerOfT<JT809GpsPosition> producer,
+            JT809_GpsPositio_Producer producer,
             ILoggerFactory loggerFactory, 
             IJT809SubordinateLoginService jT809SubordinateLoginService, 
             IJT809VerifyCodeGenerator verifyCodeGenerator) 
@@ -55,7 +57,7 @@ namespace JT809.Superior.Server
                 gpsBodies.VehiclePosition.Minute,
                 gpsBodies.VehiclePosition.Second).ToUniversalTime().Ticks - 621355968000000000) / 10000000;
             gpsPosition.FromChannel = gpsOptions.FromChannel;
-            producer.ProduceAsync($"{0x1202}", $"{exchangeMessageBodies.VehicleNo}{exchangeMessageBodies.VehicleColor}", gpsPosition);
+            producer.ProduceAsync($"{0x1202}", $"{exchangeMessageBodies.VehicleNo}{exchangeMessageBodies.VehicleColor}", gpsPosition.ToByteArray());
             return base.Msg0x1200_0x1202(request);
         }
     }

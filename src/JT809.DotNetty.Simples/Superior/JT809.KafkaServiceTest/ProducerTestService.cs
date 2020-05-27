@@ -9,9 +9,9 @@ namespace JT809.KafkaServiceTest
 {
     public class ProducerTestService
     {
-        public IJT809ProducerOfT<byte[]> SameProducer { get; }
-        public IJT809ProducerOfT<JT809GpsPosition> GpsProducer { get; }
-        public ProducerTestService(IJT809ProducerOfT<byte[]> sameProducer, IJT809ProducerOfT<JT809GpsPosition> gpsProducer)
+        public JT809_Same_Producer SameProducer { get; }
+        public JT809_GpsPositio_Producer GpsProducer { get; }
+        public ProducerTestService(JT809_Same_Producer sameProducer, JT809_GpsPositio_Producer gpsProducer)
         {
             SameProducer = sameProducer;
             GpsProducer = gpsProducer;

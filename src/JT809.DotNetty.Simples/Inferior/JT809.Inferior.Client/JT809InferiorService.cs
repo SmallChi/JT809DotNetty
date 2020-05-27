@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using JT809.Protocol.SubMessageBody;
 using JT809.Protocol.Metadata;
 using JT809.Protocol.MessageBody;
+using JT809.Protocol.Enums;
 
 namespace JT809.Inferior.Client
 {
@@ -101,7 +102,7 @@ namespace JT809.Inferior.Client
                                 Vec3 = 12
                             }
                         };
-                        var package = JT809.Protocol.Enums.JT809BusinessType.主链路车辆动态信息交换业务.Create(jT809_0X1200);
+                        var package = JT809BusinessType.主链路车辆动态信息交换业务.Create(jT809_0X1200);
                         mainClient.SendAsync(new JT809Response(package, 256));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);
