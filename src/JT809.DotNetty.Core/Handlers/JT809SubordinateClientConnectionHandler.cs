@@ -110,7 +110,7 @@ namespace JT809.DotNetty.Core.Handlers
                     string channelId = context.Channel.Id.AsShortText();
                     //发送从链路保持请求数据包
                     var package = JT809BusinessType.从链路连接保持请求消息.Create();
-                    JT809Response jT809Response = new JT809Response(package, 100);
+                    JT809Response jT809Response = new JT809Response(package, 1024);
                     if (logger.IsEnabled(LogLevel.Information))
                         logger.LogInformation($"{idleStateEvent.State.ToString()}>>>Heartbeat-{channelId}-{JT809Serializer.Serialize(package, 100).ToHexString()}");
                     context.WriteAndFlushAsync(jT809Response);

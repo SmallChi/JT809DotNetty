@@ -78,7 +78,7 @@ namespace JT809.DotNetty.Core.Handlers
                     logger.LogInformation($"{idleStateEvent.State.ToString()}>>>Heartbeat-{channelId}");
                     //发送主链路保持请求数据包
                     var package = JT809BusinessType.主链路连接保持请求消息.Create();
-                    JT809Response jT809Response = new JT809Response(package, 100);
+                    JT809Response jT809Response = new JT809Response(package, 1024);
                     context.WriteAndFlushAsync(jT809Response);
                 }
             }

@@ -12,6 +12,7 @@ using JT809.Protocol.SubMessageBody;
 using JT809.Protocol.Metadata;
 using JT809.Protocol.MessageBody;
 using JT809.Protocol.Enums;
+using JT809.Protocol.Configs;
 
 namespace JT809.Inferior.Client
 {
@@ -19,10 +20,13 @@ namespace JT809.Inferior.Client
     {
         private readonly JT809MainClient mainClient;
         private readonly ILogger<JT809InferiorService> logger;
+        private readonly JT809HeaderOptions JT809HeaderOptions;
         public JT809InferiorService(
+            JT809HeaderOptions jT809HeaderOptions,
             ILoggerFactory loggerFactory,
             JT809MainClient mainClient)
         {
+            JT809HeaderOptions = jT809HeaderOptions;
             this.mainClient = mainClient;
             logger = loggerFactory.CreateLogger<JT809InferiorService>();
         }
@@ -68,7 +72,11 @@ namespace JT809.Inferior.Client
                             }
                         };
                         var package = JT809.Protocol.Enums.JT809BusinessType.主链路车辆动态信息交换业务.Create(jT809_0X1200);
-                        mainClient.SendAsync(new JT809Response(package, 256));
+                        package.Header.MsgGNSSCENTERID = JT809HeaderOptions.MsgGNSSCENTERID;
+                        package.Header.Version = JT809HeaderOptions.Version;
+                        package.Header.EncryptKey = JT809HeaderOptions.EncryptKey;
+                        package.Header.EncryptFlag = JT809HeaderOptions.EncryptFlag;
+                        mainClient.SendAsync(new JT809Response(package, 1024));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-2s");
                         Thread.Sleep(2000);
                     }
@@ -103,7 +111,11 @@ namespace JT809.Inferior.Client
                             }
                         };
                         var package = JT809BusinessType.主链路车辆动态信息交换业务.Create(jT809_0X1200);
-                        mainClient.SendAsync(new JT809Response(package, 256));
+                        package.Header.MsgGNSSCENTERID = JT809HeaderOptions.MsgGNSSCENTERID;
+                        package.Header.Version = JT809HeaderOptions.Version;
+                        package.Header.EncryptKey = JT809HeaderOptions.EncryptKey;
+                        package.Header.EncryptFlag = JT809HeaderOptions.EncryptFlag;
+                        mainClient.SendAsync(new JT809Response(package, 1024));
                         logger.LogDebug($"Thread:{Thread.CurrentThread.ManagedThreadId}-4s");
                         Thread.Sleep(4000);
                     }

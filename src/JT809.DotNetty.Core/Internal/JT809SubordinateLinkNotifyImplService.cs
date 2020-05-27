@@ -55,6 +55,10 @@ namespace JT809.DotNetty.Core.Internal
                     {
                         ReasonCode = reasonCode
                     });
+                    package.Header.MsgGNSSCENTERID = msgGNSSCENTERID;
+                    package.Header.Version = JT809HeaderOptions.Version;
+                    package.Header.EncryptKey = JT809HeaderOptions.EncryptKey;
+                    package.Header.EncryptFlag = JT809HeaderOptions.EncryptFlag;
                     JT809Response jT809Response = new JT809Response(package, 100);
                     if (logger.IsEnabled(LogLevel.Information))
                         logger.LogInformation($"从链路断开通知消息>>>{JT809Serializer.Serialize(package, 100).ToHexString()}");

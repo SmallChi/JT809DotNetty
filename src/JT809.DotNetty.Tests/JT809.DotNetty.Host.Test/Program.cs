@@ -43,7 +43,8 @@ namespace JT809.DotNetty.Host.Test
                         Version = new JT809Header_Version(1, 0, 0),
                         EncryptKey = 9595
                     });
-                    services.AddJT809Core(hostContext.Configuration)
+                    services.AddJT809Configure()
+                            .AddJT809Core(hostContext.Configuration)
                             .AddJT809SuperiorPlatform(options:options=> {
                                 options.TcpPort = 839;
                              });

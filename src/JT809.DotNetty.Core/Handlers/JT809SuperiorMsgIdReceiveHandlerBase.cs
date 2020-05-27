@@ -40,7 +40,7 @@ namespace JT809.DotNetty.Core.Handlers
                 {JT809BusinessType.主链路断开通知消息.ToUInt16Value(),Msg0x1007 },
                 {JT809BusinessType.主链路车辆动态信息交换业务.ToUInt16Value(), Msg0x1200},
                 {JT809BusinessType.下级平台主动关闭主从链路通知消息.ToUInt16Value(), Msg0x1008},
-                {JT809BusinessType.从链路连接保持应答消息.ToUInt16Value(), Msg0x9002},
+                {JT809BusinessType.从链路连接应答信息.ToUInt16Value(), Msg0x9002},
                 {JT809BusinessType.从链路注销应答消息.ToUInt16Value(), Msg0x9004},
                 {JT809BusinessType.从链路连接保持应答消息.ToUInt16Value(), Msg0x9006},
             };

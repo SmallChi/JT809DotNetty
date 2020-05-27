@@ -9,6 +9,7 @@ using JT809.DotNetty.Core.Handlers;
 using JT809.DotNetty.Core.Interfaces;
 using JT809.DotNetty.Core.Metadata;
 using JT809.Protocol;
+using JT809.Protocol.Configs;
 using JT809.Protocol.Extensions;
 using JT809.Protocol.MessageBody;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,11 +43,15 @@ namespace JT809.DotNetty.Core.Clients
 
         private readonly IJT809ManualResetEvent manualResetEvent;
 
+        private readonly JT809HeaderOptions JT809HeaderOptions;
+
         public JT809MainClient(
+            JT809HeaderOptions jT809HeaderOptions,
             IJT809ManualResetEvent jT809ManualResetEvent,
             IServiceProvider provider,
             ILoggerFactory loggerFactory)
         {
+            JT809HeaderOptions = jT809HeaderOptions;
             this.serviceProvider = provider;
             this.logger = loggerFactory.CreateLogger<JT809MainClient>();
             this.manualResetEvent = jT809ManualResetEvent;
@@ -102,7 +107,11 @@ namespace JT809.DotNetty.Core.Clients
                         //jT809_0X1001.UserId = userId;
                         //jT809_0X1001.Password = password;
                         var package = JT809.Protocol.Enums.JT809BusinessType.主链路登录请求消息.Create(_jT809_0x1001);
-                        await channel.WriteAndFlushAsync(new JT809Response(package, 100));
+                        package.Header.MsgGNSSCENTERID = JT809HeaderOptions.MsgGNSSCENTERID;
+                        package.Header.Version = JT809HeaderOptions.Version;
+                        package.Header.EncryptKey = JT809HeaderOptions.EncryptKey;
+                        package.Header.EncryptFlag = JT809HeaderOptions.EncryptFlag;
+                        await channel.WriteAndFlushAsync(new JT809Response(package, 1024));
                         logger.LogInformation("等待登录应答结果...");
                         manualResetEvent.Pause();
                     }

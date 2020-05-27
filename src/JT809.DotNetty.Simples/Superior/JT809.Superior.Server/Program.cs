@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using JT809.KafkaService;
+using JT809.Protocol;
 
 namespace JT809.Superior.Server
 {
@@ -35,9 +36,16 @@ namespace JT809.Superior.Server
                 {
                     services.AddSingleton<ILoggerFactory, LoggerFactory>();
                     services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
-                    services.AddJT809Core(hostContext.Configuration)
+                    services.AddSingleton(new JT809HeaderOptions
+                    {
+                        MsgGNSSCENTERID = 20141013,
+                        Version = new JT809Header_Version(1, 0, 0),
+                        EncryptKey = 9595
+                    });
+                    services.AddJT809Configure()
+                            .AddJT809Core(hostContext.Configuration)
                             .AddJT809SuperiorPlatform(options:options => {
-                                options.TcpPort = 808;
+                                options.TcpPort = 809;
                             });
                     services.Configure<JT809GpsOptions>(hostContext.Configuration.GetSection("JT809GpsOptions"));
                     services.AddJT809KafkaProducerService(hostContext.Configuration);
